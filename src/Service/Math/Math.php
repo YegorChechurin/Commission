@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace YegorChechurin\CommissionTask\Service;
+namespace YegorChechurin\CommissionTask\Service\Math;
 
 class Math
 {

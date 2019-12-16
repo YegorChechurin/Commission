@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace YegorChechurin\CommissionTask\Tests\Service;
 
 use PHPUnit\Framework\TestCase;
-use YegorChechurin\CommissionTask\Service\Math;
+use YegorChechurin\CommissionTask\Service\Math\Math;
 
 class MathTest extends TestCase
 {

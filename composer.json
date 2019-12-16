@@ -1,16 +1,16 @@
 {
-    "name": "paysera/commission-task-skeleton",
-    "description": "Skeleton for Paysera recruitment task",
+    "name": "YegorChechurin/commission-test-task",
+    "description": "Yegor Chechurin's solution of recruitment task",
     "keywords": [],
     "type": "project",
     "autoload": {
         "psr-4": {
-            "Paysera\\CommissionTask\\": "src"
+            "YegorChechurin\\CommissionTask\\": "src"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Paysera\\CommissionTask\\Tests\\": "tests"
+            "YegorChechurin\\CommissionTask\\Tests\\": "tests"
         }
     },
     "require": {

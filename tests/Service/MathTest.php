@@ -42,4 +42,28 @@ class MathTest extends TestCase
             'add natural number to a float' => ['1', '1.05123', '2.05'],
         ];
     }
+
+    /**
+     * @param string $leftOperand
+     * @param string $rightOperand
+     * @param string $expectation
+     *
+     * @dataProvider dataProviderForMultiplyTesting
+     */
+    public function testMultiply(string $leftOperand, string $rightOperand, string $expectation)
+    {
+        $this->assertEquals(
+            $expectation,
+            $this->math->multiply($leftOperand, $rightOperand)
+        );
+    }
+
+    public function dataProviderForMultiplyTesting(): array
+    {
+        return [
+            'multiply 2 natural numbers' => ['1', '2', '2'],
+            'multiply negative number by a positive' => ['-1', '2', '-2'],
+            'multiply natural number by a float' => ['1', '1.05123', '1.05'],
+        ];
+    }
 }

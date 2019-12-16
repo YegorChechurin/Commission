@@ -17,4 +17,9 @@ class Math
     {
         return bcadd($leftOperand, $rightOperand, $this->scale);
     }
+
+    public function multiply(string $leftOperand, string $rightOperand): string
+    {
+        return bcmul($leftOperand, $rightOperand, $this->scale);
+    }
 }

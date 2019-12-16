@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Paysera\CommissionTask\Service;
+namespace YegorChechurin\CommissionTask\Service;
 
 class Math
 {

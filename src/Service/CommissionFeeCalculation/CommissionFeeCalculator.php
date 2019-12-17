@@ -25,9 +25,9 @@ class CommissionFeeCalculator
 	{
 		$fee = self::CASH_IN_DEFAULT_FEE * $cashInAmount;
 
-		if ('EUR' === $cashCurrency && $fee > self::CASH_IN_MAX_FEE) {
+		if ('EUR' === $cashInCurrency && $fee > self::CASH_IN_MAX_FEE) {
 			$fee = self::CASH_IN_MAX_FEE; 
-		} elseif ('EUR' !== $cashCurrency) {
+		} elseif ('EUR' !== $cashInCurrency) {
 			$feeInEUR = $this->currencyConverter->convertToEuro($cashInCurrency, $fee);
 
 			if ($feeInEUR > self::CASH_IN_MAX_FEE) {

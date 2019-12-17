@@ -24,7 +24,7 @@ class CommissionFeeRounder
     	$originalFractionalChars = $this->splitStringIntoArrayOfChars($originalFractional);
 
     	$smallestCurrencyItem = $originalFractionalChars[$numOfDecDigits-1].'.';
-    	for ($i=$order; $i < count($originalFractionalChars); $i++) { 
+    	for ($i=$numOfDecDigits; $i < count($originalFractionalChars); $i++) { 
     		$smallestCurrencyItem .= $originalFractionalChars[$i];
     	}
     	$smallestCurrencyItem = $this->roundSmallestCurrencyItemToUpperBound($smallestCurrencyItem);

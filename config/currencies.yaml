@@ -1,0 +1,9 @@
+EUR:
+  conversion_rate: 1
+  number_of_decimal_digits_of_smallest_item: 2
+USD:
+  conversion_rate: 1.1497
+  number_of_decimal_digits_of_smallest_item: 2
+JPY:
+  conversion_rate: 129.53
+  number_of_decimal_digits_of_smallest_item: 0

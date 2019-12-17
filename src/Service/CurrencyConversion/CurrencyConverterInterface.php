@@ -4,5 +4,7 @@ namespace YegorChechurin\CommissionTask\Service\CurrencyConversion;
 
 interface CurrencyConverterInterface
 {
-	public function convert(string $inputCurrency, string $outputCurrency, string $amountOfInputCurrency): string
+	public function convertFromEuro($currencyName, $amountInEUR);
+	
+	public function convertToEuro($currencyName, $amountInCurrencyToBeConverted);
 }

@@ -4,34 +4,43 @@ declare(strict_types=1);
 
 namespace YegorChechurin\CommissionTask\Service\CurrencyConversion;
 
-use YegorChechurin\CommissionTask\Service\CurrencyConversion\Exception\UnsupportedCurrenciesFoundException;
+use YegorChechurin\CommissionTask\Service\CurrencyConversion\Exception\UnsupportedCurrencyException;
 
 class CurrencyConverter implements CurrencyConverterInterface
 {
-	private const EUR_USD_RATE = 1.1497;
+	private const CONVERSION_RATES = [
+		'USD' => 1.1497,
+		'JPY' => 129.53,
+	];
 
-	private const EUR_JPY_RATE = 129.53;
-
-	private $supportedCurrencies = ['EUR', 'USD', 'JPY'];
-
-	public function convert(string $inputCurrency, string $outputCurrency, string $amountOfInputCurrency): string
-	{}
-
-	private function checkCurrenciesAreSupported(string $inputCurrency, string $outputCurrency): void
+	public function convertFromEuro($currencyName, $eurAmount)
 	{
-		$currencies = [$inputCurrency, $outputCurrency];
-		$notSupportedCurrencies = [];
+		$this->checkCurrencyIsSupported($currencyName);
 
-		foreach ($currencies as $c) {
-			if (!in_array($c, $this->supportedCurrencies)) {
-			    $notSupportedCurrencies[] = $c;
-		    }
-		}
+		return $eurAmount * $this->getConversionRate($currencyName);
+	}
 
-		if (count($notSupportedCurrencies) > 0) {
-			throw UnsupportedCurrenciesFoundException(
-				'These currencies are not supported for conversion: '.implode(' ', $notSupportedCurrencies)
-			);
+	public function convertToEuro($currencyName, $currencyAmount)
+	{
+		$this->checkCurrencyIsSupported($currencyName);
+		
+		return $currencyAmount * $this->getReverseConversionRate($currencyName);
+	}
+
+	private function getConversionRate(string $currencyName)
+	{
+		return self::CONVERSION_RATES[$currencyName];
+	}
+
+	private function getReverseConversionRate(string $currencyName)
+	{
+		return 1 / $this->getConversionRate($currencyName);
+	}
+
+	private function checkCurrencyIsSupported(string $currencyName): void
+	{
+		if (!in_array($currencyName, array_keys(self::CONVERSION_RATES))) {
+			throw UnsupportedCurrencyException($currencyName);
 		}
 	}
 }

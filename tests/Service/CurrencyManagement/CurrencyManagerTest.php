@@ -4,6 +4,7 @@ namespace YegorChechurin\CommissionTask\Tests\Service\CurrencyManagement;
 
 use PHPUnit\Framework\TestCase;
 use YegorChechurin\CommissionTask\Service\CurrencyManagement\CurrencyManager;
+use YegorChechurin\CommissionTask\Service\CurrencyManagement\Exception\RuntimeException\UnsupportedCurrencyException;
 
 class CurrencyManagerTest extends TestCase
 {
@@ -19,7 +20,8 @@ class CurrencyManagerTest extends TestCase
 
 	public function testGetConfig()
 	{
-		var_dump($this->manager->getConfig());
+		//$this->expectException(UnsupportedCurrencyException::class);
+		//var_dump($this->manager->getNumberOfDecimalDigitsOfCurrencySmallestItem('USA'));
 
 		$this->assertTrue(true);
 	}

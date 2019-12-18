@@ -21,7 +21,7 @@ class CommissionFeeClaculatorTest extends TestCase
     {
         $builder = new ContainerBuilder();
         $builder->addDefinitions(
-            dirname(__DIR__, 3).'/config/DI_container.php'
+            dirname(__DIR__, 3).'/config/DI/container.php'
         );
         $container = $builder->build();
 

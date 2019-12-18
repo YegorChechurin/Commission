@@ -9,7 +9,7 @@ class CurrencyManager
 {
 	private const NUM_OF_DIR_TO_GO_UP_TO_CONFIG = 3;
 
-	private const CONF_FILE_LOCATION = '/config/currencies.yaml';
+	private const CONF_FILE_LOCATION = '/config/DomainLogicSettings/currencies.yaml';
 
 	private $currencies;
 

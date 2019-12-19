@@ -2,59 +2,32 @@
 
 namespace YegorChechurin\CommissionTask\Service\CommissionFeeCalculation;
 
+use YegorChechurin\CommissionTask\Service\CurrencyManagement\CurrencyManager;
+use YegorChechurin\CommissionTask\Service\Math\Rounder;
+
 class CommissionFeeRounder
 {
 	/**
-	 * @var array DECIMAL_DIGITS numbers of decimal digits to round to for
-	 * each currency
+	 * @var CurrencyManager
 	 */
-	private const DECIMAL_DIGITS = [
-		'EUR' => 2,
-		'USD' => 2,
-		'JPY' => 0,
-	];
+	private $cm;
 
-	public function round(string $currencyName, $amount)
+	/**
+	 * @var Rounder
+	 */
+	private $rounder;
+
+	public function __construct(CurrencyManager $cm, Rounder $rounder)
 	{
-		$numOfDecDigits = self::DECIMAL_DIGITS[$currencyName];
+		$this->cm = $cm;
 
-		$originalParts = $this->splitDecimalIntoWholeAndFractional($amount);
-    	$originalWhole = $originalParts['whole'];
-    	$originalFractional = $originalParts['fractional'];
-    	$originalFractionalChars = $this->splitStringIntoArrayOfChars($originalFractional);
-
-    	$smallestCurrencyItem = $originalFractionalChars[$numOfDecDigits-1].'.';
-    	for ($i=$numOfDecDigits; $i < count($originalFractionalChars); $i++) { 
-    		$smallestCurrencyItem .= $originalFractionalChars[$i];
-    	}
-    	$smallestCurrencyItem = $this->roundSmallestCurrencyItemToUpperBound($smallestCurrencyItem);
-
-    	$roundedFractional = '';
-    	for ($i=0; $i < $numOfDecDigits-1; $i++) { 
-    		$roundedFractional .= $originalFractionalChars[$i];
-    	}
-    	$roundedFractional .= $smallestCurrencyItem;
-    	
-    	return $originalWhole.'.'.$roundedFractional;
+		$this->rounder = $rounder;
 	}
 
-	private function splitDecimalIntoWholeAndFractional($decimal): array
+	public function round(string $currencyName, $commissionFee)
 	{
-		$parts = explode('.', strval($decimal));
+		$digitToRound = $this->cm->getNumberOfDecimalDigitsOfCurrencySmallestItem($currencyName);
 
-		return [
-			'whole' => $parts[0],
-			'fractional' => $parts[1],
-		];
-	}
-
-	private function splitStringIntoArrayOfChars(string $string): array
-	{
-		return str_split($string);
-	}
-
-	private function roundSmallestCurrencyItemToUpperBound($item)
-	{
-		return ceil($item); 
+		return $this->rounder->roundSpecificDigitAfterPointToUpperBound($commissionFee, $digitToRound);
 	}
 }

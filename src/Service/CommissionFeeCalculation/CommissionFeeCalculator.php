@@ -3,6 +3,7 @@
 namespace YegorChechurin\CommissionTask\Service\CommissionFeeCalculation;
 
 use YegorChechurin\CommissionTask\Service\CurrencyConversion\CurrencyConverterInterface;
+use YegorChechurin\CommissionTask\Service\CommissionFeeCalculation\CommissionFeeRounder;
 
 class CommissionFeeCalculator
 {

@@ -1,0 +1,13 @@
+cash_in:
+  fee: 0.0003
+  maximum_amount: 5
+cash_out:
+  legal:
+    fee: 0.003
+    minimum_amount: 0.5
+  natural:
+    fee: 0.003
+    free_of_charge:
+      amount: 1000
+      period: 'week'
+      number_of_operations: 3

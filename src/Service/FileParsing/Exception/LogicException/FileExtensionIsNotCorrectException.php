@@ -4,11 +4,10 @@ namespace YegorChechurin\CommissionTask\Service\FileParsing\Exception\LogicExcep
 
 class FileExtensionIsNotCorrectException extends \LogicException
 {
-	public function __construct()
+	public function __construct(string $givenFileExtension, string $correctFileExtension)
 	{
-		parent::__construct($givenFileExtension, $correctFileExtension)
-		{
-			sprintf('File with "%s" extension is given, while correct extension is "%s"', $givenFileExtension, $correctFileExtension);
-		}
+		parent::__construct(
+			sprintf('File with "%s" extension is given, while correct extension is "%s"', $givenFileExtension, $correctFileExtension)
+		);
 	}
 }

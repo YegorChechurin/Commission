@@ -18,9 +18,8 @@ class Rounder
 		$result = $decimal;
 
 		if ($this->math->checkNumberIsDecimal($decimal)) {
-			$originalParts = $this->math->splitDecimalIntoWholeAndFractional($decimal);
-			$originalWhole = $originalParts['whole'];
-			$originalFractional = $originalParts['fractional'];
+			list($originalWhole, 
+				$originalFractional) = $this->math->splitDecimalIntoWholeAndFractional($decimal);
 
 			if ($positionAfterPoint > 0) {
 				$originalFractionalChars = str_split($originalFractional);

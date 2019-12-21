@@ -37,12 +37,7 @@ class Math
     public function splitDecimalIntoWholeAndFractional($decimal): array
     {
         if ($this->checkNumberIsDecimal($decimal)) {
-            $parts = explode('.', strval($decimal));
-
-            return [
-                'whole' => $parts[0],
-                'fractional' => $parts[1],
-            ];
+            return explode('.', strval($decimal));
         } else {
             throw new NumberIsNotDecimalException((string) $decimal);
         }

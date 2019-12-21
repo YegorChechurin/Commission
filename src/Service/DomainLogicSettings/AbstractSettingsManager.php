@@ -8,44 +8,27 @@ abstract class AbstractSettingsManager
 
 	private const SETTINGS_LOCATION = '/config/DomainLogicSettings/';
 
-	private $settingsFileExtension;
-
-	private $settingsFileParser;
-
 	protected $settings;
 
-	public function __construct(string $fileExtension, FileParserInterface $fileParser)
+	public function __construct(FileParserFactory $fileParserFactory)
 	{
-		$this->settingsFileExtension = $fileExtension;
-
-		$this->settingsFileParser = $fileParser;
-
-		$this->settings = $this->getSettings();
+		$this->settings = $this->getSettings($fileParserFactory);
 	}
 
-	private function getSettings()
+	private function getSettings(FileParserFactory $fileParserFactory)
 	{
-		return $this->parseSettingsFile($this->getSettingsFilePath());
+		return $this->parseSettingsFile($this->getSettingsFilePath(), $fileParserFactory);
 	}
 
-	private function parseSettingsFile(string $settingsFilePath)
+	private function parseSettingsFile(string $settingsFilePath, FileParserFactory $fileParserFactory)
 	{
-		$this->settingsFileParser->parseFile($settingsFilePath);
+		$settingsFileExtension = pathinfo($settingsFilePath, \PATHINFO_EXTENSION);
+		$settingsFileParser = $fileParserFactory->getFileParser($settingsFileExtension);
+
+		return $settingsFileParser->parseFile($settingsFilePath);
 	}
 
 	private function getSettingsFilePath(): string
-	{
-		$refClass = new \ReflectionClass($this);
-		$refClassName = $refClass->getShortName();
-
-		list($settingsName) = explode('Manager', $refClassName);
-		$settingsFileName = strtolower($settingsName).$this->settingsFileExtension;
-		$settingsFilePath = dirname(__DIR__, self::NUM_OF_DIR_TO_GO_UP).self::SETTINGS_LOCATION.$settingsFileName;
-
-		return $settingsFilePath;
-	}
-
-	private function getSettingsFilePathNew()
 	{
 		$allFiles = $this->getAllSettingFiles();
 

@@ -11,7 +11,7 @@ final class YamlFileParser extends AbstractFileParser
 		$this->correctFileExtension = 'yaml';
 	}
 
-	public function parseFile(string $filePath)
+	public function parseFile(string $filePath): array
 	{
 		$this->checkFileExtensionIsCorrect($filePath);
 		

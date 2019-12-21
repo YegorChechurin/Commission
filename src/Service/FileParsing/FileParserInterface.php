@@ -4,5 +4,5 @@ namespace YegorChechurin\CommissionTask\Service\FileParsing;
 
 interface FileParserInterface
 {
-	public function parseFile(string $filePath);
+	public function parseFile(string $filePath): array;
 }

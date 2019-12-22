@@ -27,7 +27,6 @@ class FileParserFactory
 		} else {
 			return false;
 		}
-		
 	}
 
 	private function createFileParser(string $fileExtension): void

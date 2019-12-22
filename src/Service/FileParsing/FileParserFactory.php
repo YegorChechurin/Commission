@@ -2,7 +2,9 @@
 
 namespace YegorChechurin\CommissionTask\Service\FileParsing;
 
-class FileParserFactory
+use YegorChechurin\CommissionTask\Service\FileParsing\Exception\LogicException\FileParserForThisTypeOfFilesDoesNotExistException;
+
+class FileParserFactory implements FileParserFactoryInterface
 {
 	private $fileParserPool;
 
@@ -33,7 +35,8 @@ class FileParserFactory
 	{
 		try {
 			if (!array_key_exists($fileExtension, $this->fileParserPool)) {
-				$fileParserClassName = __NAMESPACE__.ucfirst($fileExtension).'FileParser';
+				$fileParserClassName = __NAMESPACE__.'\\'.ucfirst($fileExtension).'FileParser';
+
 				$fileParserReflection = new \ReflectionClass($fileParserClassName);
 
 				$this->fileParserPool[$fileExtension] = $fileParserReflection->newInstance();

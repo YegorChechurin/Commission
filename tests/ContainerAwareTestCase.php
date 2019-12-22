@@ -7,6 +7,8 @@ use DI\ContainerBuilder;
 
 class ContainerAwareTestCase extends TestCase
 {
+	private const CONFIG_FILE_LOCATION = '/config/DI/container.php';
+	
 	/** 
 	 * @var DI\Container 
 	 */
@@ -18,7 +20,7 @@ class ContainerAwareTestCase extends TestCase
 
 		$builder = new ContainerBuilder();
         $builder->addDefinitions(
-            dirname(__DIR__, 3).'/config/DI/container.php'
+            dirname(__DIR__).self::CONFIG_FILE_LOCATION
         );
 
         $this->container = $builder->build();

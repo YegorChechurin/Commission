@@ -2,13 +2,31 @@
 
 namespace YegorChechurin\CommissionTask\Service\FileParsing;
 
+use YegorChechurin\CommissionTask\Service\FileParsing\Exception\LogicException\CorrectFileExtensionIsNotSetException;
 use YegorChechurin\CommissionTask\Service\FileParsing\Exception\LogicException\FileExtensionIsNotCorrectException;
 
 abstract class AbstractFileParser implements FileParserInterface
 {
 	protected $correctFileExtension;
 
-	abstract public function parseFile(string $filePath): array;
+	abstract protected function readFile(string $filePath): array;
+
+	public function parseFile(string $filePath): array
+	{
+		$this->checkCorrectFileExtensionIsSet();
+		$this->checkFileExtensionIsCorrect($filePath);
+
+		return $this->readFile($filePath);
+	}
+
+	protected function checkCorrectFileExtensionIsSet(): void
+	{
+		if (!$this->correctFileExtension) {
+			$fileParserClassName = (new \ReflectionClass($this))->getName();
+			
+			throw new CorrectFileExtensionIsNotSetException($fileParserClassName);
+		}
+	}
 
 	protected function checkFileExtensionIsCorrect(string $filePath): void
 	{

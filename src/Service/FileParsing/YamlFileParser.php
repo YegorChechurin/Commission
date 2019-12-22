@@ -6,15 +6,15 @@ use Symfony\Component\Yaml\Yaml;
 
 final class YamlFileParser extends AbstractFileParser
 {
+	private const CORRECT_FILE_EXTENSION = 'yaml';
+
 	public function __construct()
 	{
-		$this->correctFileExtension = 'yaml';
+		$this->correctFileExtension = self::CORRECT_FILE_EXTENSION;
 	}
 
-	public function parseFile(string $filePath): array
-	{
-		$this->checkFileExtensionIsCorrect($filePath);
-		
+	protected function readFile(string $filePath): array
+	{	
 		return Yaml::parseFile($filePath);
 	}
 } 

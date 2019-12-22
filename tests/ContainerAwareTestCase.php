@@ -14,10 +14,8 @@ class ContainerAwareTestCase extends TestCase
 	 */
 	protected $container;
 
-	public function __construct()
+	protected function bootContainer()
 	{
-		parent::__construct();
-
 		$builder = new ContainerBuilder();
         $builder->addDefinitions(
             dirname(__DIR__).self::CONFIG_FILE_LOCATION

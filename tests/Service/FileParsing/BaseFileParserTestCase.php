@@ -4,7 +4,7 @@ namespace YegorChechurin\CommissionTask\Tests\Service\FileParsing;
 
 use PHPUnit\Framework\TestCase;
 
-abstract class BaseFileParserTest extends TestCase
+abstract class BaseFileParserTestCase extends TestCase
 {
 	protected const FILES_TO_PARSE_DIRECTORY = __DIR__.'/FilesToParse/';
 
@@ -22,7 +22,7 @@ abstract class BaseFileParserTest extends TestCase
 			$this->fileParserToTest, 
 			[$filePath, $readingParameters]
 		);
-		
+
 		$readFileMethodReflection->setAccessible(false);
 
 		return $fileContents;

@@ -2,11 +2,10 @@
 
 namespace YegorChechurin\CommissionTask\Tests\Service\FileParsing;
 
-//use PHPUnit\Framework\TestCase;
-use YegorChechurin\CommissionTask\Tests\Service\FileParsing\BaseFileParserTest;
+use YegorChechurin\CommissionTask\Tests\Service\FileParsing\BaseFileParserTestCase;
 use YegorChechurin\CommissionTask\Service\FileParsing\YamlFileParser;
 
-class YamlFileParserTest extends BaseFileParserTest
+class YamlFileParserTest extends BaseFileParserTestCase
 {
 	private const TEST_FILE = 'yaml_test.yaml';
 

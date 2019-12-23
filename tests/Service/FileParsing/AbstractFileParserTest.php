@@ -9,10 +9,15 @@ use YegorChechurin\CommissionTask\Service\FileParsing\Exception\LogicException\F
 
 class AbstractFileParserTest extends TestCase
 {
+	private $abstractFileParserMock;
+
 	private $testFile;
 
 	public function setUp()
 	{
+		$this->abstractFileParserMock = $this->getMockBuilder(AbstractFileParser::class)
+		    ->getMockForAbstractClass();
+
 		$this->testFile = 'test_file.dummy';
 	}
 
@@ -20,25 +25,19 @@ class AbstractFileParserTest extends TestCase
 	{
 		$this->expectException(CorrectFileExtensionIsNotSetException::class);
 
-		$abstractFileParserMock = $this->getMockBuilder(AbstractFileParser::class)
-		    ->getMockForAbstractClass();
-
-		$abstractFileParserMock->parseFile($this->testFile);
+		$this->abstractFileParserMock->parseFile($this->testFile);
 	}
 
 	public function testCheckFileExtensionIsCorrect()
 	{
 		$this->expectException(FileExtensionIsNotCorrectException::class);
 
-		$abstractFileParserMock = $this->getMockBuilder(AbstractFileParser::class)
-		    ->getMockForAbstractClass();
-
-		$mockReflection = new \ReflectionClass($abstractFileParserMock);
+		$mockReflection = new \ReflectionClass($this->abstractFileParserMock);
 		$mockPropertyToSet = $mockReflection->getProperty('correctFileExtension');
 		$mockPropertyToSet->setAccessible(true);
-		$mockPropertyToSet->setValue($abstractFileParserMock, 'test');
+		$mockPropertyToSet->setValue($this->abstractFileParserMock, 'test');
 		$mockPropertyToSet->setAccessible(false);
 
-		$abstractFileParserMock->parseFile($this->testFile);
+		$this->abstractFileParserMock->parseFile($this->testFile);
 	}
 }

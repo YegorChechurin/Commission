@@ -14,9 +14,7 @@ class CurrencyConverterTest extends ContainerAwareTestCase
 
 	public function setUp()
 	{
-		$this->bootContainer();
-
-		$this->currencyConverter = $this->container->get(CurrencyConverter::class);
+		$this->currencyConverter = $this->get(CurrencyConverter::class);
 	}
 
 	/** 

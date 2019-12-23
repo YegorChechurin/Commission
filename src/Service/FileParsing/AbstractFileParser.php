@@ -9,7 +9,7 @@ abstract class AbstractFileParser implements FileParserInterface
 {
 	protected $correctFileExtension;
 
-	abstract protected function readFile(string $filePath): array;
+	abstract protected function readFile(string $filePath, array $readingParameters = null): array;
 
 	public function parseFile(string $filePath): array
 	{

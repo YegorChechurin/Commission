@@ -13,7 +13,7 @@ final class YamlFileParser extends AbstractFileParser
 		$this->correctFileExtension = self::CORRECT_FILE_EXTENSION;
 	}
 
-	protected function readFile(string $filePath): array
+	protected function readFile(string $filePath, array $readingParameters = null): array
 	{	
 		return Yaml::parseFile($filePath);
 	}

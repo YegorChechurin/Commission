@@ -5,7 +5,7 @@ namespace YegorChechurin\CommissionTask\Tests;
 use PHPUnit\Framework\TestCase;
 use DI\ContainerBuilder;
 
-class ContainerAwareTestCase extends TestCase
+abstract class ContainerAwareTestCase extends TestCase
 {
 	private const CONFIG_FILE_LOCATION = '/config/DI/container.php';
 	

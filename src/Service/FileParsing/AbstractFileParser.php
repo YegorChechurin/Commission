@@ -9,9 +9,9 @@ abstract class AbstractFileParser implements FileParserInterface
 {
 	protected $correctFileExtension;
 
-	abstract protected function readFile(string $filePath, ?array $readingParameters = null): array;
+	abstract protected function readFile(string $filePath): array;
 
-	public function parseFile(string $filePath, ?array $parsingParameters = null): array
+	public function parseFile(string $filePath): array
 	{
 		$this->checkCorrectFileExtensionIsSet();
 		$this->checkFileExtensionIsCorrect($filePath);

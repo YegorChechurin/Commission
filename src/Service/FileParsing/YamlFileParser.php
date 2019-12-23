@@ -4,7 +4,7 @@ namespace YegorChechurin\CommissionTask\Service\FileParsing;
 
 use Symfony\Component\Yaml\Yaml;
 
-final class YamlFileParser extends AbstractFileParser
+class YamlFileParser extends AbstractFileParser
 {
 	private const CORRECT_FILE_EXTENSION = 'yaml';
 
@@ -13,7 +13,7 @@ final class YamlFileParser extends AbstractFileParser
 		$this->correctFileExtension = self::CORRECT_FILE_EXTENSION;
 	}
 
-	protected function readFile(string $filePath, ?array $readingParameters = null): array
+	protected function readFile(string $filePath): array
 	{	
 		return Yaml::parseFile($filePath);
 	}

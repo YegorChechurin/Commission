@@ -3,6 +3,7 @@
 namespace YegorChechurin\CommissionTask\Tests;
 
 use PHPUnit\Framework\TestCase;
+use DI\Container;
 use DI\ContainerBuilder;
 
 abstract class ContainerAwareTestCase extends TestCase
@@ -10,11 +11,20 @@ abstract class ContainerAwareTestCase extends TestCase
 	private const CONFIG_FILE_LOCATION = '/config/DI/container.php';
 	
 	/** 
-	 * @var DI\Container 
+	 * @var Container 
 	 */
-	protected $container;
+	private $container;
 
-	protected function bootContainer()
+	protected function get(string $className)
+	{
+		if (!($this->container instanceof Container)) {
+			$this->bootContainer();
+		}
+
+		return $this->container->get($className);
+	}
+
+	private function bootContainer()
 	{
 		$builder = new ContainerBuilder();
         $builder->addDefinitions(

@@ -15,9 +15,7 @@ class CurrenciesManagerTest extends ContainerAwareTestCase
 
 	public function setUp()
 	{
-		$this->bootContainer();
-
-		$this->currenciesManager = $this->container->get(CurrenciesManager::class);
+		$this->currenciesManager = $this->get(CurrenciesManager::class);
 	}
 
 	/** 

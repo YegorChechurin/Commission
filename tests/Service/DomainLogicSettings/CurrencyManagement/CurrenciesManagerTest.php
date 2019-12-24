@@ -1,6 +1,6 @@
 <?php
 
-namespace YegorChechurin\CommissionTask\Tests\Service\CurrencyConversion;
+namespace YegorChechurin\CommissionTask\Tests\Service\DomainLogicSettings\CurrencyManagement;
 
 use YegorChechurin\CommissionTask\Tests\ContainerAwareTestCase;
 use YegorChechurin\CommissionTask\Service\DomainLogicSettings\CurrencyManagement\CurrenciesManager;

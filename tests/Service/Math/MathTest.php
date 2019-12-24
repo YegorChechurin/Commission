@@ -6,18 +6,59 @@ namespace YegorChechurin\CommissionTask\Tests\Service;
 
 use PHPUnit\Framework\TestCase;
 use YegorChechurin\CommissionTask\Service\Math\Math;
+use YegorChechurin\CommissionTask\Service\Math\Exception\LogicException\NumberIsNotDecimalException;
 
 class MathTest extends TestCase
 {
     /**
      * @var Math
      */
-    /*private $math;
+    private $math;
 
     public function setUp()
     {
-        $this->math = new Math(2);
-    }*/
+        $this->math = new Math();
+    }
+
+    /**
+     * @dataProvider decimalNumberProvider
+     */
+    public function testCheckNumberIsDecimalTrue($number)
+    {
+        $this->assertTrue($this->math->checkNumberIsDecimal($number));
+    }
+
+    public function decimalNumberProvider()
+    {
+        return [
+            ['25.456'], ['8.17']
+        ];
+    }
+
+    /**
+     * @dataProvider integerNumberProvider
+     */
+    public function testCheckNumberIsDecimalNotTrue($number)
+    {
+        $this->assertNotTrue($this->math->checkNumberIsDecimal($number));
+    }
+
+    /**
+     * @dataProvider integerNumberProvider
+     */
+    public function testSplitDecimalIntoWholeAndFractional($number)
+    {
+        $this->expectException(NumberIsNotDecimalException::class);
+
+        $this->math->splitDecimalIntoWholeAndFractional($number);
+    }
+
+    public function integerNumberProvider()
+    {
+        return [
+            ['8'], ['777']
+        ];
+    }
 
     /**
      * @param string $leftOperand

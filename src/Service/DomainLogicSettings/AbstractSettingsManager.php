@@ -4,6 +4,7 @@ namespace YegorChechurin\CommissionTask\Service\DomainLogicSettings;
 
 use YegorChechurin\CommissionTask\Service\FileParsing\FileParserFactoryInterface;
 use YegorChechurin\CommissionTask\Service\FileParsing\FileParserInterface;
+use YegorChechurin\CommissionTask\Service\DomainLogicSettings\Exception\LogicException\NoSettingsFileException;
 
 abstract class AbstractSettingsManager
 {

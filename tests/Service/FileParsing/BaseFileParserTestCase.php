@@ -12,15 +12,14 @@ abstract class BaseFileParserTestCase extends TestCase
 
 	protected $testFilePath;
 
-	protected function getReadFileResult(string $filePath, array $readingParameters = null)
+	protected function getReadFileResult(string $filePath)
 	{
 		$parserReflection = new \ReflectionClass($this->fileParserToTest);
 		$readFileMethodReflection = $parserReflection->getMethod('readFile');
 		$readFileMethodReflection->setAccessible(true);
 
 		$fileContents = $readFileMethodReflection->invokeArgs(
-			$this->fileParserToTest, 
-			[$filePath, $readingParameters]
+			$this->fileParserToTest, [$filePath]
 		);
 
 		$readFileMethodReflection->setAccessible(false);

@@ -34,13 +34,10 @@ class FileParserFactory implements FileParserFactoryInterface
 	private function createFileParser(string $fileExtension): void
 	{
 		try {
-			if (!array_key_exists($fileExtension, $this->fileParserPool)) {
-				$fileParserClassName = __NAMESPACE__.'\\'.ucfirst($fileExtension).'FileParser';
-
-				$fileParserReflection = new \ReflectionClass($fileParserClassName);
-
-				$this->fileParserPool[$fileExtension] = $fileParserReflection->newInstance();
-			}
+			$fileParserClassName = __NAMESPACE__.'\\'.ucfirst($fileExtension).'FileParser';
+			$fileParserReflection = new \ReflectionClass($fileParserClassName);
+			
+			$this->fileParserPool[$fileExtension] = $fileParserReflection->newInstance();
 		} catch(\ReflectionException $e) {
 			throw new FileParserForThisTypeOfFilesDoesNotExistException($fileExtension);
 		}

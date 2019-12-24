@@ -37,6 +37,52 @@ class Math
         }
     }*/
 
+    public function roundSpecificDigitAfterPointToUpperBound(string $decimal, int $positionAfterPoint)
+    {
+        if ($positionAfterPoint < 0) {
+            throw new InvalidPostionAfterPointException();
+        }
+
+        $result = $decimal;
+
+        if ($this->checkNumberIsDecimal($decimal)) {
+            list($originalWhole, 
+                $originalFractional) = $this->splitDecimalIntoWholeAndFractional($decimal);
+
+            if ($positionAfterPoint > 0) {
+                $originalFractionalChars = str_split($originalFractional);
+
+                $digitToRound = $originalFractionalChars[$positionAfterPoint-1].'.';
+                for ($i=$positionAfterPoint; $i < count($originalFractionalChars); $i++) { 
+                    $digitToRound .= $originalFractionalChars[$i];
+                }
+
+                $roundedDigit = ceil($digitToRound);
+
+                $roundedFractional = '';
+                for ($i=0; $i < $positionAfterPoint-1; $i++) { 
+                    $roundedFractional .= $originalFractionalChars[$i];
+                }
+                $roundedFractional .= $roundedDigit;
+                
+                $result = $originalWhole.'.'.$roundedFractional;
+            } else {
+                $originalWholeChars = str_split($originalWhole);
+
+                $digitToRound = $originalWholeChars[count($originalWholeChars)-1].'.'; 
+                $digitToRound .= $originalFractional;
+
+                $roundedDigit = ceil($digitToRound);
+
+                $result = $originalWholeChars;
+                $result[count($originalWholeChars)-1] = $roundedDigit;
+                $result = implode('', $result);
+            }
+        }
+
+        return $result;
+    }
+
     public function checkNumberIsDecimal(string $number): bool
     {
         $isDecimal = true;

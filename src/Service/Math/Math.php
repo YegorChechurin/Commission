@@ -6,6 +6,7 @@ namespace YegorChechurin\CommissionTask\Service\Math;
 
 use YegorChechurin\CommissionTask\Service\Math\Exception\LogicException\NumberIsNotDecimalException;
 use YegorChechurin\CommissionTask\Service\Math\Exception\RuntimeException\CheckNumberIsDecimalException;
+use YegorChechurin\CommissionTask\Service\Math\Exception\LogicException\InvalidPostionAfterPointException;
 
 class Math
 {
@@ -37,7 +38,7 @@ class Math
         }
     }*/
 
-    public function roundSpecificDigitAfterPointToUpperBound(string $decimal, int $positionAfterPoint)
+    public function roundSpecificDigitAfterPointToUpperBound(string $decimal, int $positionAfterPoint): string
     {
         if ($positionAfterPoint < 0) {
             throw new InvalidPostionAfterPointException();

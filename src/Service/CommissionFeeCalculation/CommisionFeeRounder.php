@@ -3,7 +3,7 @@
 namespace YegorChechurin\CommissionTask\Service\CommissionFeeCalculation;
 
 use YegorChechurin\CommissionTask\Service\CurrencyManagement\CurrencyManager;
-use YegorChechurin\CommissionTask\Service\Math\Rounder;
+use YegorChechurin\CommissionTask\Service\Math\Math;
 
 class CommissionFeeRounder
 {
@@ -13,21 +13,21 @@ class CommissionFeeRounder
 	private $cm;
 
 	/**
-	 * @var Rounder
+	 * @var Math
 	 */
-	private $rounder;
+	private $math;
 
-	public function __construct(CurrencyManager $cm, Rounder $rounder)
+	public function __construct(CurrencyManager $cm, Math $math)
 	{
 		$this->cm = $cm;
 
-		$this->rounder = $rounder;
+		$this->math = $math;
 	}
 
 	public function round(string $currencyName, $commissionFee)
 	{
 		$digitToRound = $this->cm->getNumberOfDecimalDigitsOfCurrencySmallestItem($currencyName);
 
-		return $this->rounder->roundSpecificDigitAfterPointToUpperBound($commissionFee, $digitToRound);
+		return $this->math->roundSpecificDigitAfterPointToUpperBound($commissionFee, $digitToRound);
 	}
 }

@@ -2,42 +2,117 @@
 
 namespace YegorChechurin\CommissionTask\Service\CommissionFeeCalculation;
 
+use YegorChechurin\CommissionTask\Service\DomainLogicSettings\CommissionManagement\CommissionsManager;
 use YegorChechurin\CommissionTask\Service\CurrencyConversion\CurrencyConverterInterface;
 use YegorChechurin\CommissionTask\Service\CommissionFeeCalculation\CommissionFeeRounder;
 
 class CommissionFeeCalculator
 {
-	private const CASH_IN_DEFAULT_FEE = 0.0003;
-
-	private const CASH_IN_MAX_FEE = 5.00;
+	/** 
+	 * @var CommissionsManager 
+	 */
+	private $cm;
 
 	private $currencyConverter;
 
 	private $rounder;
 
-	public function __construct(CurrencyConverterInterface $currencyConverter, CommissionFeeRounder $rounder)
+	private $naturalCashOutHistrory;
+
+	public function __construct(CommissionsManager $cm, CurrencyConverterInterface $currencyConverter, CommissionFeeRounder $rounder)
 	{
+		$this->cm = $cm;
+
 		$this->currencyConverter = $currencyConverter;
 
 		$this->rounder = $rounder;
+
+		$this->naturalCashOutHistrory = [];
 	}
 
-	public function calculateCashInCommissionFee(string $cashInAmount, string $cashInCurrency)
+	public function calculateCashInCommissionFee(array $operationParams): array
 	{
-		$fee = self::CASH_IN_DEFAULT_FEE * $cashInAmount;
+		$commissionParams = $this->cm->getCommissionParameters($operationParams['name']);
 
-		if ('EUR' === $cashInCurrency && $fee > self::CASH_IN_MAX_FEE) {
-			$fee = self::CASH_IN_MAX_FEE; 
-		} elseif ('EUR' !== $cashInCurrency) {
-			$feeInEUR = $this->currencyConverter->convertToEuro($cashInCurrency, $fee);
+		$fee = $commissionParams['fee'] * $operationParams['amount'];
 
-			if ($feeInEUR > self::CASH_IN_MAX_FEE) {
-				$fee = $this->currencyConverter->convertFromEuro($cashInCurrency, self::CASH_IN_MAX_FEE);
-			} else {
-				$fee = $this->currencyConverter->convertFromEuro($cashInCurrency, $feeInEUR);
-			}
+		if ('EUR' !== $operationParams['name']) {
+			$feeInEUR = $this->currencyConverter->convertToEuro($operationParams['currency'], $fee);
+
+			if ($feeInEUR > $commissionParams['maximum_amount']) {
+			    $feeInEUR = $commissionParams['maximum_amount'];
+		    } 
+
+		    $fee = $this->currencyConverter->convertFromEuro($cashInCurrency, $feeInEUR);
+		} else {
+			if ($fee > $commissionParams['maximum_amount']) {
+			    $fee = $commissionParams['maximum_amount'];
+		    } 
 		}
 
-		return $this->rounder->round($cashInCurrency, $fee);
+		return $this->rounder->round($operationParams['currency'], $fee);
+	}
+
+	public function calculateLegalCashOutCommissionFee(array $operationParams): array
+	{
+		$commissionParams = $this->cm->getCommissionParameters($operationParams['name']);
+
+		$fee = $commissionParams['fee'] * $operationParams['amount'];
+
+		if ('EUR' !== $operationParams['name']) {
+			$feeInEUR = $this->currencyConverter->convertToEuro($operationParams['currency'], $fee);
+
+			if ($feeInEUR < $commissionParams['minimum_amount']) {
+			    $feeInEUR = $commissionParams['minimum_amount'];
+		    } 
+
+		    $fee = $this->currencyConverter->convertFromEuro($cashInCurrency, $feeInEUR);
+		} else {
+			if ($fee < $commissionParams['minimum_amount']) {
+			    $fee = $commissionParams['minimum_amount'];
+		    } 
+		}
+
+		return $this->rounder->round($operationParams['currency'], $fee);
+	}
+
+	public function calculateNaturalCashOutCommissionFee(array $operationParams): array
+	{
+		$commissionParams = $this->cm->getCommissionParameters($operationParams['name']);
+
+		$weekday = $this->turnDateIntoWeekDay($operationParams['date']);
+
+		if (array_key_exists($operationParams['user_id'], $this->naturalCashOutHistrory)) {
+			# do calculations
+			# $this->updateHistoryRecord
+		} else {
+			# do calculations
+			# this->createHistoryRecord
+		}
+	}
+
+	private function updateHistoryRecord(string $userId, string $weekday, string $operationAmountEUR)
+	{
+		if ('Sunday' === $this->naturalCashOutHistrory[$userId]['weekday'] && 'Monday' === $weekday) {
+			$this->createHistoryRecord($userId, $weekday, $operationAmountEUR);
+		} else {
+			$this->naturalCashOutHistrory[$userId]['operation_count']++;
+			$this->naturalCashOutHistrory[$userId]['total_amount_in_euro'] += $operationAmountEUR;
+			$this->naturalCashOutHistrory[$userId]['weekday'] = $weekday;
+		}
+	}
+
+	private function createHistoryRecord(string $userId, string $weekday, string $operationAmountEUR)
+	{
+		$this->naturalCashOutHistrory[$userId] = [
+				'operation_count' => 1,
+				'weekday' => $weekday,
+				'total_amount_in_euro' => $operationAmountEUR,
+			];
+	}
+
+	private function turnDateIntoWeekDay(string $date): string
+	{
+		return date("l", strtotime($date));
 	}
 }

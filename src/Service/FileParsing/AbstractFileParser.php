@@ -16,7 +16,7 @@ abstract class AbstractFileParser implements FileParserInterface
 		$this->checkCorrectFileExtensionIsSet();
 		$this->checkFileExtensionIsCorrect($filePath);
 
-		return $this->readFile($filePath, $parsingParameters);
+		return $this->readFile($filePath);
 	}
 
 	protected function checkCorrectFileExtensionIsSet(): void

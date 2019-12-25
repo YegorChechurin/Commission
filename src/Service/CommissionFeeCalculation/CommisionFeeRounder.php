@@ -24,7 +24,7 @@ class CommissionFeeRounder
 		$this->math = $math;
 	}
 
-	public function round(string $currencyName, $commissionFee)
+	public function round(string $currencyName, $commissionFee): string
 	{
 		$digitToRound = $this->cm->getNumberOfDecimalDigitsOfCurrencySmallestItem($currencyName);
 

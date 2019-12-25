@@ -10,7 +10,7 @@ use YegorChechurin\CommissionTask\Service\CommissionFeeCalculation\CommissionFee
 use DI;
 use DI\ContainerBuilder;
 
-class CommissionFeeClaculatorTest extends TestCase
+class CommissionFeeCalculatorTest extends TestCase
 {
 	/**
      * @var CommissionFeeCalculator
@@ -29,7 +29,9 @@ class CommissionFeeClaculatorTest extends TestCase
     }
 
     public function testCalculateCashInCommissionFee(){
-    	echo $this->calculator->calculateCashInCommissionFee('1000000', 'USD');
+    	//echo $this->calculator->calculateCashInCommissionFee('1000000', 'USD');
+
+        var_dump(date("l", strtotime('2019-12-22')));
 
     	$this->assertTrue(true);
     }

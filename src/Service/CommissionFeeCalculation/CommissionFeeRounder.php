@@ -2,7 +2,7 @@
 
 namespace YegorChechurin\CommissionTask\Service\CommissionFeeCalculation;
 
-use YegorChechurin\CommissionTask\Service\CurrencyManagement\CurrencyManager;
+use YegorChechurin\CommissionTask\Service\DomainLogicSettings\CurrencyManagement\CurrenciesManager;
 use YegorChechurin\CommissionTask\Service\Math\Math;
 
 class CommissionFeeRounder
@@ -17,7 +17,7 @@ class CommissionFeeRounder
 	 */
 	private $math;
 
-	public function __construct(CurrencyManager $cm, Math $math)
+	public function __construct(CurrenciesManager $cm, Math $math)
 	{
 		$this->cm = $cm;
 

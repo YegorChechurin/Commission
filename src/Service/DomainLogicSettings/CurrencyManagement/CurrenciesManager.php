@@ -21,9 +21,9 @@ class CurrenciesManager extends AbstractSettingsManager
 		return $this->settings[$currencyName]['number_of_decimal_digits_of_smallest_item'];
 	}
 
-	public function checkCurrencyIsSupported(string $currencyName)
+	private function checkCurrencyIsSupported(string $currencyName)
 	{
-		if (!in_array($currencyName, array_keys($this->settings))) {
+		if (!array_key_exists($currencyName, $this->settings)) {
 			throw new UnsupportedCurrencyException($currencyName);
 		}
 	}

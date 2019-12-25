@@ -66,7 +66,7 @@ class CurrenciesManagerTest extends ContainerAwareTestCase
 		$this->expectException(UnsupportedCurrencyException::class);
 		$this->expectExceptionMessage($currencyName);
 
-		$this->currenciesManager->checkCurrencyIsSupported($currencyName);
+		$this->currenciesManager->getCurrencyConversionRate($currencyName);
 	}
 
 	public function currencyIsSupportedProvider(): array

@@ -91,57 +91,9 @@ class MathTest extends TestCase
             ['12.00001', 4, '12.0001'],
             ['12.00', 0, '12'],
             ['12.0000000001', 0, '13'],
-            ['12.9999999', 0, '13']
-        ];
-    }
-
-    /**
-     * @param string $leftOperand
-     * @param string $rightOperand
-     * @param string $expectation
-     *
-     * @dataProvider dataProviderForAddTesting
-     */
-    public function testAdd(string $leftOperand, string $rightOperand, string $expectation)
-    {
-        $this->assertTrue(true);
-        /*$this->assertEquals(
-            $expectation,
-            $this->math->add($leftOperand, $rightOperand)
-        );*/
-    }
-
-    public function dataProviderForAddTesting(): array
-    {
-        return [
-            'add 2 natural numbers' => ['1', '2', '3'],
-            'add negative number to a positive' => ['-1', '2', '1'],
-            'add natural number to a float' => ['1', '1.05123', '2.05'],
-        ];
-    }
-
-    /**
-     * @param string $leftOperand
-     * @param string $rightOperand
-     * @param string $expectation
-     *
-     * @dataProvider dataProviderForMultiplyTesting
-     */
-    public function testMultiply(string $leftOperand, string $rightOperand, string $expectation)
-    {
-        $this->assertTrue(true);
-        /*$this->assertEquals(
-            $expectation,
-            $this->math->multiply($leftOperand, $rightOperand)
-        );*/
-    }
-
-    public function dataProviderForMultiplyTesting(): array
-    {
-        return [
-            'multiply 2 natural numbers' => ['1', '2', '2'],
-            'multiply negative number by a positive' => ['-1', '2', '-2'],
-            'multiply natural number by a float' => ['1', '1.05123', '1.05'],
+            ['12.9999999', 0, '13'],
+            ['0.5', 2, '0.50'],
+            ['0.5', 3, '0.500'],
         ];
     }
 }

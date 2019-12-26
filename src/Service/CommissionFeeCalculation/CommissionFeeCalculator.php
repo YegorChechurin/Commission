@@ -77,14 +77,14 @@ class CommissionFeeCalculator
 		if ('EUR' !== $operationParams['currency']) {
 			$feeInEUR = $this->currencyConverter->convertToEuro($operationParams['currency'], $fee);
 
-			if ($feeInEUR < $commissionParams['minimum_amount']) {
-			    $feeInEUR = $commissionParams['minimum_amount'];
+			if ($feeInEUR < $commissionParams['legal']['minimum_amount']) {
+			    $feeInEUR = $commissionParams['legal']['minimum_amount'];
 		    } 
 
 		    $fee = $this->currencyConverter->convertFromEuro($operationParams['currency'], $feeInEUR);
 		} else {
-			if ($fee < $commissionParams['minimum_amount']) {
-			    $fee = $commissionParams['minimum_amount'];
+			if ($fee < $commissionParams['legal']['minimum_amount']) {
+			    $fee = $commissionParams['legal']['minimum_amount'];
 		    } 
 		}
 

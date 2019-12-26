@@ -10,34 +10,6 @@ use YegorChechurin\CommissionTask\Service\Math\Exception\LogicException\InvalidP
 
 class Math
 {
-    /*private $scale;
-
-    public function __construct(int $scale)
-    {
-        $this->scale = $scale;
-    }
-
-    public function add(string $leftOperand, string $rightOperand): string
-    {
-        return bcadd($leftOperand, $rightOperand, $this->scale);
-    }
-
-    public function multiply(string $leftOperand, string $rightOperand): string
-    {
-        return bcmul($leftOperand, $rightOperand, $this->scale);
-    }*/
-
-    /*public function checkNumberIsDecimal($number): bool
-    {
-        if (1 === preg_match('%\.%', $number) && ctype_digit($number)) {
-            return true;
-        } elseif ((int)0 === preg_match('%\.%', $number) && ctype_digit($number)) {
-            return false;
-        } else {
-            throw new CheckNumberIsDecimalException((string) $number);
-        }
-    }*/
-
     public function roundSpecificDigitAfterPointToUpperBound(string $decimal, int $positionAfterPoint): string
     {
         if ($positionAfterPoint < 0) {
@@ -46,13 +18,6 @@ class Math
 
         $result = $decimal;
 
-        if ('0' === $result && $positionAfterPoint > 0) {
-            $result .= '.';
-            for ($i = 0; $i < $positionAfterPoint - 1; $i++) { 
-                $result .= '0';
-            }
-        }
-
         if ($this->checkNumberIsDecimal($decimal)) {
             list($originalWhole, 
                 $originalFractional) = $this->splitDecimalIntoWholeAndFractional($decimal);
@@ -60,47 +25,53 @@ class Math
             if ($positionAfterPoint > 0) {
                 $originalFractionalChars = str_split($originalFractional);
 
-                $digitToRound = $originalFractionalChars[$positionAfterPoint-1].'.';
-                for ($i = $positionAfterPoint; $i < count($originalFractionalChars); $i++) { 
-                    $digitToRound .= $originalFractionalChars[$i];
-                }
-
-                $roundedDigit = ceil($digitToRound);
-
-                $stack1 = new \SplStack();
-                for ($i=0; $i < $positionAfterPoint-1; $i++) { 
-                    $stack1->push($originalFractionalChars[$i]);
-                }
-
-                if ($roundedDigit == 10) {
-                    $roundedDigit = '0';
-                    $plusFlag = true;
+                if (count($originalFractionalChars) < $positionAfterPoint) {
+                    for ($i = count($originalFractionalChars) - 1; $i < $positionAfterPoint - 1; $i++) { 
+                        $result .= '0';
+                    }
                 } else {
-                    $plusFlag = false;
-                }
+                    $digitToRound = $originalFractionalChars[$positionAfterPoint-1].'.';
+                    for ($i = $positionAfterPoint; $i < count($originalFractionalChars); $i++) { 
+                        $digitToRound .= $originalFractionalChars[$i];
+                    }
 
-                $stack2 = new \SplStack();
-                for ($i=0; $i < $positionAfterPoint-1; $i++) { 
-                    $previous = $stack1->pop();
-                    if ($plusFlag) {
-                        $previous++;
-                    } 
-                    if ($previous == 10) {
-                        $previous = '0';
+                    $roundedDigit = ceil($digitToRound);
+
+                    $stack1 = new \SplStack();
+                    for ($i=0; $i < $positionAfterPoint-1; $i++) { 
+                        $stack1->push($originalFractionalChars[$i]);
+                    }
+
+                    if ($roundedDigit == 10) {
+                        $roundedDigit = '0';
                         $plusFlag = true;
                     } else {
                         $plusFlag = false;
                     }
-                    $stack2->push($previous);
-                }
 
-                $roundedFractional = '';
-                for ($i=0; $i < $positionAfterPoint-1; $i++) { 
-                    $roundedFractional .= $stack2->pop();
-                }
-                $roundedFractional .= $roundedDigit;
+                    $stack2 = new \SplStack();
+                    for ($i=0; $i < $positionAfterPoint-1; $i++) { 
+                        $previous = $stack1->pop();
+                        if ($plusFlag) {
+                            $previous++;
+                        } 
+                        if ($previous == 10) {
+                            $previous = '0';
+                            $plusFlag = true;
+                        } else {
+                            $plusFlag = false;
+                        }
+                        $stack2->push($previous);
+                    }
+
+                    $roundedFractional = '';
+                    for ($i=0; $i < $positionAfterPoint-1; $i++) { 
+                        $roundedFractional .= $stack2->pop();
+                    }
+                    $roundedFractional .= $roundedDigit;
                 
-                $result = $originalWhole.'.'.$roundedFractional;
+                    $result = $originalWhole.'.'.$roundedFractional;
+                }
             } else {
                 $originalWholeChars = str_split($originalWhole);
 
@@ -112,6 +83,13 @@ class Math
                 $result = $originalWholeChars;
                 $result[count($originalWholeChars)-1] = $roundedDigit;
                 $result = implode('', $result);
+            }
+        } else {
+            if ($positionAfterPoint > 0) {
+                $result .= '.';
+                for ($i = 0; $i < $positionAfterPoint; $i++) { 
+                    $result .= '0';
+                }
             }
         }
 

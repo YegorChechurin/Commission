@@ -30,20 +30,35 @@ class CommissionFeeCalculator
 		$this->naturalCashOutHistrory = [];
 	}
 
-	public function calculateCashInCommissionFee(array $operationParams): array
+	public function calculateCommissionFee(array $operationParams): ?string
+	{
+		$fee = null;
+
+		if ($operationParams['name'] === 'cash_in') {
+			$fee = $this->calculateCashInCommissionFee($operationParams);
+		} elseif ($operationParams['name'] === 'cash_out' && $operationParams['user_type'] === 'legal') {
+			$fee = $this->calculateLegalCashOutCommissionFee($operationParams);
+		} else {
+			$fee = $this->calculateNaturalCashOutCommissionFee($operationParams);
+		}
+
+		return $fee;
+	}
+
+	public function calculateCashInCommissionFee(array $operationParams): string
 	{
 		$commissionParams = $this->cm->getCommissionParameters($operationParams['name']);
 
 		$fee = $commissionParams['fee'] * $operationParams['amount'];
 
-		if ('EUR' !== $operationParams['name']) {
+		if ('EUR' !== $operationParams['currency']) {
 			$feeInEUR = $this->currencyConverter->convertToEuro($operationParams['currency'], $fee);
 
 			if ($feeInEUR > $commissionParams['maximum_amount']) {
 			    $feeInEUR = $commissionParams['maximum_amount'];
 		    } 
 
-		    $fee = $this->currencyConverter->convertFromEuro($cashInCurrency, $feeInEUR);
+		    $fee = $this->currencyConverter->convertFromEuro($operationParams['currency'], $feeInEUR);
 		} else {
 			if ($fee > $commissionParams['maximum_amount']) {
 			    $fee = $commissionParams['maximum_amount'];
@@ -53,20 +68,20 @@ class CommissionFeeCalculator
 		return $this->rounder->round($operationParams['currency'], $fee);
 	}
 
-	public function calculateLegalCashOutCommissionFee(array $operationParams): array
+	public function calculateLegalCashOutCommissionFee(array $operationParams): string
 	{
 		$commissionParams = $this->cm->getCommissionParameters($operationParams['name']);
 
-		$fee = $commissionParams['fee'] * $operationParams['amount'];
+		$fee = $commissionParams['fee']['legal'] * $operationParams['amount'];
 
-		if ('EUR' !== $operationParams['name']) {
+		if ('EUR' !== $operationParams['currency']) {
 			$feeInEUR = $this->currencyConverter->convertToEuro($operationParams['currency'], $fee);
 
 			if ($feeInEUR < $commissionParams['minimum_amount']) {
 			    $feeInEUR = $commissionParams['minimum_amount'];
 		    } 
 
-		    $fee = $this->currencyConverter->convertFromEuro($cashInCurrency, $feeInEUR);
+		    $fee = $this->currencyConverter->convertFromEuro($operationParams['currency'], $feeInEUR);
 		} else {
 			if ($fee < $commissionParams['minimum_amount']) {
 			    $fee = $commissionParams['minimum_amount'];
@@ -76,25 +91,50 @@ class CommissionFeeCalculator
 		return $this->rounder->round($operationParams['currency'], $fee);
 	}
 
-	public function calculateNaturalCashOutCommissionFee(array $operationParams): array
+	public function calculateNaturalCashOutCommissionFee(array $operationParams): string
 	{
 		$commissionParams = $this->cm->getCommissionParameters($operationParams['name']);
 
-		$weekday = $this->turnDateIntoWeekDay($operationParams['date']);
+		$userId = $operationParams['user_id'];
+		$date = $this->turnDateIntoWeekDay($operationParams['date']);
+		$operationAmountEUR = $operationParams['amount'];
 
-		if (array_key_exists($operationParams['user_id'], $this->naturalCashOutHistrory)) {
-			# do calculations
-			# $this->updateHistoryRecord
+		if ('EUR' !== $operationParams['currency']) {
+			$operationAmountEUR = $this->currencyConverter->convertToEuro($operationParams['currency'], $operationAmountEUR);
+		} 
+
+		if (array_key_exists($userId, $this->naturalCashOutHistrory)) {
+			$this->updateHistoryRecord($userId, $date, $operationAmountEUR);
 		} else {
-			# do calculations
-			# this->createHistoryRecord
+			$this->createHistoryRecord($userId, $date, $operationAmountEUR);
 		}
+
+		$userHistory = $this->naturalCashOutHistrory[$userId];
+
+		if ($userHistory['operation_count'] > 3) {
+			$feeInEUR = $commissionParams['natural']['fee'] * $operationAmountEUR;
+		} else {
+			$feeInEUR = $this->calculateNaturalCashOutCommissionFeeInEuroWithDiscount();
+		}
+
+		if ('EUR' !== $operationParams['currency']) {
+			$fee = $this->currencyConverter->convertFromEuro($operationParams['currency'], $feeInEUR);
+		} else {
+			$fee = $feeInEUR;
+		}
+
+		return $this->rounder->round($operationParams['currency'], $fee);
 	}
 
-	private function updateHistoryRecord(string $userId, string $weekday, string $operationAmountEUR)
+	private function turnDateIntoWeekDay(string $date): string
 	{
-		if ('Sunday' === $this->naturalCashOutHistrory[$userId]['weekday'] && 'Monday' === $weekday) {
-			$this->createHistoryRecord($userId, $weekday, $operationAmountEUR);
+		return date("l", strtotime($date));
+	}
+
+	private function updateHistoryRecord(string $userId, string $date, string $operationAmountEUR)
+	{
+		if ('Sunday' === $this->naturalCashOutHistrory[$userId]['weekday'] && 'Sunday' !== $weekday) {
+			$this->createHistoryRecord($userId, $date, $operationAmountEUR);
 		} else {
 			$this->naturalCashOutHistrory[$userId]['operation_count']++;
 			$this->naturalCashOutHistrory[$userId]['total_amount_in_euro'] += $operationAmountEUR;
@@ -102,17 +142,30 @@ class CommissionFeeCalculator
 		}
 	}
 
-	private function createHistoryRecord(string $userId, string $weekday, string $operationAmountEUR)
+	private function createHistoryRecord(string $userId, string $date, string $operationAmountEUR)
 	{
 		$this->naturalCashOutHistrory[$userId] = [
 				'operation_count' => 1,
-				'weekday' => $weekday,
+				'date' => $date,
+				'weekday' => $this->turnDateIntoWeekDay($date),
 				'total_amount_in_euro' => $operationAmountEUR,
 			];
 	}
 
-	private function turnDateIntoWeekDay(string $date): string
+	private function calculateNaturalCashOutCommissionFeeInEuroWithDiscount(array $commissionParams, array $userHistory, string $operationAmountEUR): ?string
 	{
-		return date("l", strtotime($date));
+		$feeInEUR = '0.00';
+
+		$freeOfChargeAmount = $commissionParams['natural']['free_of_charge']['amount'];
+
+		if ($userHistory['total_amount_in_euro'] - $operationAmountEUR > $freeOfChargeAmount) {
+			$feeInEUR = $commissionParams['natural']['fee'] * $operationAmountEUR;
+		} else {
+			if ($userHistory['total_amount_in_euro'] > $freeOfChargeAmount) {
+				$feeInEUR = $commissionParams['natural']['fee'] * ($operationAmountEUR - $freeOfChargeAmount);
+			}
+		}
+
+		return $feeInEUR;
 	}
 }

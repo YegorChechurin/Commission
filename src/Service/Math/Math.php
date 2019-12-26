@@ -46,6 +46,13 @@ class Math
 
         $result = $decimal;
 
+        if ('0' === $result && $positionAfterPoint > 0) {
+            $result .= '.';
+            for ($i=0; $i < $positionAfterPoint - 1; $i++) { 
+                $result .= '0';
+            }
+        }
+
         if ($this->checkNumberIsDecimal($decimal)) {
             list($originalWhole, 
                 $originalFractional) = $this->splitDecimalIntoWholeAndFractional($decimal);
@@ -60,11 +67,74 @@ class Math
 
                 $roundedDigit = ceil($digitToRound);
 
+                $stack1 = new \SplStack();
+                for ($i=0; $i < $positionAfterPoint-1; $i++) { 
+                    $stack1->push($originalFractionalChars[$i]);
+                }
+
+                if ($roundedDigit == 10) {
+                    $roundedDigit = '0';
+                    $plusFlag = true;
+                } else {
+                    $plusFlag = false;
+                }
+
+                $stack2 = new \SplStack();
+                for ($i=0; $i < $positionAfterPoint-1; $i++) { 
+                    $previous = $stack1->pop();
+                    if ($plusFlag) {
+                        $previous++;
+                    } 
+                    if ($previous == 10) {
+                        $previous = '0';
+                        $plusFlag = true;
+                    } else {
+                        $plusFlag = false;
+                    }
+                    $stack2->push($previous);
+                }
+
                 $roundedFractional = '';
                 for ($i=0; $i < $positionAfterPoint-1; $i++) { 
-                    $roundedFractional .= $originalFractionalChars[$i];
+                    $roundedFractional .= $stack2->pop();
                 }
                 $roundedFractional .= $roundedDigit;
+
+                /*if ($roundedDigit != 10) {
+                    $roundedFractional = '';
+                    for ($i=0; $i < $positionAfterPoint-1; $i++) { 
+                        $roundedFractional .= $originalFractionalChars[$i];
+                    }
+                    $roundedFractional .= $roundedDigit;
+                } else {
+                    $roundedDigit = '0';
+
+                    $stack1 = new \SplStack();
+                    for ($i=0; $i < $positionAfterPoint-1; $i++) { 
+                        $stack1->push($originalFractionalChars[$i]);
+                    }
+
+                    $plusFlag = true;
+                    $stack2 = new \SplStack();
+                    for ($i=0; $i < $positionAfterPoint-1; $i++) { 
+                        $previous = $stack1->pop();
+                        if ($plusFlag) {
+                            $previous++;
+                        } 
+                        if ($previous == 10) {
+                            $previous = '0';
+                        } else {
+                            $plusFlag = false;
+                        }
+                        $stack2->push($previous);
+                    }
+
+                    $roundedFractional = '';
+                    for ($i=0; $i < $positionAfterPoint-1; $i++) { 
+                        $roundedFractional .= $stack2->pop();
+                    }
+                    $roundedFractional .= $roundedDigit;
+                }*/
                 
                 $result = $originalWhole.'.'.$roundedFractional;
             } else {

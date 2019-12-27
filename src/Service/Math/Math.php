@@ -12,6 +12,85 @@ class Math
 {
     public function roundSpecificDigitAfterPointToUpperBound(string $decimal, int $positionAfterPoint): string
     {
+        if (!$this->checkNumberIsDecimal($decimal)) {
+            throw new NumberIsNotDecimalException($decimal);
+        }
+
+        if ($positionAfterPoint < 0) {
+            throw new InvalidPostionAfterPointException();
+        }
+
+        list($originalWhole, 
+                $originalFractional) = $this->splitDecimalIntoWholeAndFractional($decimal);
+
+        if ($positionAfterPoint > 0) {
+            $originalFractionalChars = str_split($originalFractional);
+
+            if (count($originalFractionalChars) < $positionAfterPoint) {
+                for ($i = count($originalFractionalChars) - 1; $i < $positionAfterPoint - 1; $i++) { 
+                    $result .= '0';
+                }
+            } else {
+                $digitToRound = $originalFractionalChars[$positionAfterPoint-1].'.';
+                for ($i = $positionAfterPoint; $i < count($originalFractionalChars); $i++) { 
+                    $digitToRound .= $originalFractionalChars[$i];
+                }
+
+                $roundedDigit = ceil($digitToRound);
+
+                $stack1 = new \SplStack();
+                for ($i=0; $i < $positionAfterPoint-1; $i++) { 
+                    $stack1->push($originalFractionalChars[$i]);
+                }
+
+                if ($roundedDigit == 10) {
+                    $roundedDigit = '0';
+                    $plusFlag = true;
+                } else {
+                    $plusFlag = false;
+                }
+
+                $stack2 = new \SplStack();
+                for ($i=0; $i < $positionAfterPoint-1; $i++) { 
+                    $previous = $stack1->pop();
+                    if ($plusFlag) {
+                        $previous++;
+                    } 
+                    if ($previous == 10) {
+                        $previous = '0';
+                        $plusFlag = true;
+                    } else {
+                        $plusFlag = false;
+                    }
+                    $stack2->push($previous);
+                }
+
+                $roundedFractional = '';
+                for ($i=0; $i < $positionAfterPoint-1; $i++) { 
+                    $roundedFractional .= $stack2->pop();
+                }
+                $roundedFractional .= $roundedDigit;
+            
+                $result = $originalWhole.'.'.$roundedFractional;
+            }
+        } else {
+            $originalWholeChars = str_split($originalWhole);
+
+            $digitToRound = $originalWholeChars[count($originalWholeChars)-1].'.'; 
+            $digitToRound .= $originalFractional;
+
+            $roundedDigit = ceil($digitToRound);
+
+            $result = $originalWholeChars;
+            $result[count($originalWholeChars)-1] = $roundedDigit;
+            $result = implode('', $result);
+        }
+
+        return $result;
+    }
+
+    /*public function roundSpecificDigitAfterPointToUpperBound(string $decimal, int $positionAfterPoint): string
+    {
         if ($positionAfterPoint < 0) {
             throw new InvalidPostionAfterPointException();
         }
@@ -85,16 +164,11 @@ class Math
                 $result = implode('', $result);
             }
         } else {
-            if ($positionAfterPoint > 0) {
-                $result .= '.';
-                for ($i = 0; $i < $positionAfterPoint; $i++) { 
-                    $result .= '0';
-                }
-            }
+            $result = $this->convertIntegerToFloat($result, $positionAfterPoint);
         }
 
         return $result;
-    }
+    }*/
 
     public function checkNumberIsDecimal(string $number): bool
     {
@@ -132,5 +206,20 @@ class Math
         } else {
             throw new NumberIsNotDecimalException($decimal);
         }
+    }
+
+    public function convertIntegerToFloat(string $integer, int $numberOfDigitsAfterPoint): string
+    {
+        if ($positionAfterPoint < 0) {
+            throw new InvalidPostionAfterPointException();
+        }
+
+        $result = $integer;
+
+        if ($positionAfterPoint > 0) {
+            $result = number_format($result, $numberOfDigitsAfterPoint);
+        }
+
+        return $result;
     }
 }

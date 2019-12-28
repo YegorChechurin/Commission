@@ -9,5 +9,4 @@ cash_out:
     fee: 0.003
     free_of_charge:
       amount: 1000
-      period: 'week'
       number_of_operations: 3

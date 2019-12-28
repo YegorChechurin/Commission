@@ -133,7 +133,7 @@ class Math
         $result = $integer;
 
         if ($numberOfDigitsAfterPoint > 0) {
-            $result = number_format($result, $numberOfDigitsAfterPoint);
+            $result = number_format($result, $numberOfDigitsAfterPoint, '.', '');
         }
 
         return $result;

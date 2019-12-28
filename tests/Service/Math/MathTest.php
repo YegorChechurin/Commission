@@ -25,26 +25,26 @@ class MathTest extends TestCase
      * @dataProvider decimalNumberProvider
      */
     public function testCheckNumberIsDecimalTrue($number)
-    {$this->assertTrue(true);
-        //$this->assertTrue($this->math->checkNumberIsDecimal($number));
+    {
+        $this->assertTrue($this->math->checkNumberIsDecimal($number));
     }
 
     /**
      * @dataProvider integerNumberProvider
      */
     public function testCheckNumberIsDecimalNotTrue($number)
-    {$this->assertTrue(true);
-        //$this->assertNotTrue($this->math->checkNumberIsDecimal($number));
+    {
+        $this->assertNotTrue($this->math->checkNumberIsDecimal($number));
     }
 
     /**
      * @dataProvider integerNumberProvider
      */
     public function testSplitDecimalIntoWholeAndFractional($number)
-    {$this->assertTrue(true);
-        //$this->expectException(NumberIsNotDecimalException::class);
+    {
+        $this->expectException(NumberIsNotDecimalException::class);
 
-        //$this->math->splitDecimalIntoWholeAndFractional($number);
+        $this->math->splitDecimalIntoWholeAndFractional($number);
     }
 
     public function decimalNumberProvider()
@@ -62,10 +62,10 @@ class MathTest extends TestCase
     }
 
     public function testExceptionalRoundSpecificDigitAfterPointToUpperBound()
-    {$this->assertTrue(true);
-        //$this->expectException(InvalidPostionAfterPointException::class);
+    {
+        $this->expectException(InvalidPostionAfterPointException::class);
 
-        //$this->math->roundSpecificDigitAfterPointToUpperBound('12.13', -5);
+        $this->math->roundSpecificDigitAfterPointToUpperBound('12.13', -5);
     }
 
     /** 
@@ -84,8 +84,6 @@ class MathTest extends TestCase
     public function roundSpecificDigitAfterPointToUpperBoundProvider()
     {
         return [
-            ['0', 2, '0.00'],
-            ['5', 3, '5.000'],
             ['0.6948197328804', 2, '0.70'],
             ['0.69999999999', 3, '0.700'],
             ['12.131', 2, '12.14'],
@@ -95,6 +93,27 @@ class MathTest extends TestCase
             ['12.9999999', 0, '13'],
             ['0.5', 2, '0.50'],
             ['0.5', 3, '0.500'],
+        ];
+    }
+
+    /** 
+     * @dataProvider convertIntegerToFloatProvider 
+     */
+    public function testConvertIntegerToFloat(string $integer, int $positionAfterPoint, string $expectation)
+    {
+        $this->assertEquals(
+            $expectation,
+            $this->math->convertIntegerToFloat(
+                $integer, $positionAfterPoint
+            )
+        );
+    }
+
+    public function convertIntegerToFloatProvider()
+    {
+        return [
+            ['0', 2, '0.00'],
+            ['5', 3, '5.000'],
         ];
     }
 }

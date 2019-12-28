@@ -27,6 +27,7 @@ class Math
             $originalFractionalChars = str_split($originalFractional);
 
             if (count($originalFractionalChars) < $positionAfterPoint) {
+                $result = $decimal;
                 for ($i = count($originalFractionalChars) - 1; $i < $positionAfterPoint - 1; $i++) { 
                     $result .= '0';
                 }
@@ -42,34 +43,30 @@ class Math
                 for ($i=0; $i < $positionAfterPoint-1; $i++) { 
                     $stack1->push($originalFractionalChars[$i]);
                 }
-
-                if ($roundedDigit == 10) {
-                    $roundedDigit = '0';
-                    $plusFlag = true;
-                } else {
-                    $plusFlag = false;
-                }
+                $stack1->push($roundedDigit);
 
                 $stack2 = new \SplStack();
-                for ($i=0; $i < $positionAfterPoint-1; $i++) { 
-                    $previous = $stack1->pop();
-                    if ($plusFlag) {
-                        $previous++;
+                for ($i=0; $i < $positionAfterPoint; $i++) { 
+                    $digit = $stack1->pop();
+
+                    if (!empty($plusFlag)) {
+                        $digit++;
                     } 
-                    if ($previous == 10) {
-                        $previous = '0';
+
+                    if ($digit == 10) {
+                        $digit = '0';
                         $plusFlag = true;
                     } else {
                         $plusFlag = false;
                     }
-                    $stack2->push($previous);
+
+                    $stack2->push($digit);
                 }
 
                 $roundedFractional = '';
-                for ($i=0; $i < $positionAfterPoint-1; $i++) { 
+                for ($i=0; $i < $positionAfterPoint; $i++) { 
                     $roundedFractional .= $stack2->pop();
                 }
-                $roundedFractional .= $roundedDigit;
             
                 $result = $originalWhole.'.'.$roundedFractional;
             }
@@ -89,87 +86,6 @@ class Math
         return $result;
     }
 
-    /*public function roundSpecificDigitAfterPointToUpperBound(string $decimal, int $positionAfterPoint): string
-    {
-        if ($positionAfterPoint < 0) {
-            throw new InvalidPostionAfterPointException();
-        }
-
-        $result = $decimal;
-
-        if ($this->checkNumberIsDecimal($decimal)) {
-            list($originalWhole, 
-                $originalFractional) = $this->splitDecimalIntoWholeAndFractional($decimal);
-
-            if ($positionAfterPoint > 0) {
-                $originalFractionalChars = str_split($originalFractional);
-
-                if (count($originalFractionalChars) < $positionAfterPoint) {
-                    for ($i = count($originalFractionalChars) - 1; $i < $positionAfterPoint - 1; $i++) { 
-                        $result .= '0';
-                    }
-                } else {
-                    $digitToRound = $originalFractionalChars[$positionAfterPoint-1].'.';
-                    for ($i = $positionAfterPoint; $i < count($originalFractionalChars); $i++) { 
-                        $digitToRound .= $originalFractionalChars[$i];
-                    }
-
-                    $roundedDigit = ceil($digitToRound);
-
-                    $stack1 = new \SplStack();
-                    for ($i=0; $i < $positionAfterPoint-1; $i++) { 
-                        $stack1->push($originalFractionalChars[$i]);
-                    }
-
-                    if ($roundedDigit == 10) {
-                        $roundedDigit = '0';
-                        $plusFlag = true;
-                    } else {
-                        $plusFlag = false;
-                    }
-
-                    $stack2 = new \SplStack();
-                    for ($i=0; $i < $positionAfterPoint-1; $i++) { 
-                        $previous = $stack1->pop();
-                        if ($plusFlag) {
-                            $previous++;
-                        } 
-                        if ($previous == 10) {
-                            $previous = '0';
-                            $plusFlag = true;
-                        } else {
-                            $plusFlag = false;
-                        }
-                        $stack2->push($previous);
-                    }
-
-                    $roundedFractional = '';
-                    for ($i=0; $i < $positionAfterPoint-1; $i++) { 
-                        $roundedFractional .= $stack2->pop();
-                    }
-                    $roundedFractional .= $roundedDigit;
-                
-                    $result = $originalWhole.'.'.$roundedFractional;
-                }
-            } else {
-                $originalWholeChars = str_split($originalWhole);
-
-                $digitToRound = $originalWholeChars[count($originalWholeChars)-1].'.'; 
-                $digitToRound .= $originalFractional;
-
-                $roundedDigit = ceil($digitToRound);
-
-                $result = $originalWholeChars;
-                $result[count($originalWholeChars)-1] = $roundedDigit;
-                $result = implode('', $result);
-            }
-        } else {
-            $result = $this->convertIntegerToFloat($result, $positionAfterPoint);
-        }
-
-        return $result;
-    }*/
-
     public function checkNumberIsDecimal(string $number): bool
     {
         $isDecimal = true;
@@ -177,7 +93,7 @@ class Math
         if (1 === preg_match('%\.%', $number)) {
             $parts = explode('.', $number);
 
-            if (count($parts) != 2) {
+            if (count($parts) !== 2) {
                 throw new CheckNumberIsDecimalException($number);
             }
 
@@ -210,13 +126,13 @@ class Math
 
     public function convertIntegerToFloat(string $integer, int $numberOfDigitsAfterPoint): string
     {
-        if ($positionAfterPoint < 0) {
+        if ($numberOfDigitsAfterPoint < 0) {
             throw new InvalidPostionAfterPointException();
         }
 
         $result = $integer;
 
-        if ($positionAfterPoint > 0) {
+        if ($numberOfDigitsAfterPoint > 0) {
             $result = number_format($result, $numberOfDigitsAfterPoint);
         }
 

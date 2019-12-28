@@ -24,10 +24,16 @@ class CommissionFeeRounder
 		$this->math = $math;
 	}
 
-	public function round(string $currencyName, $commissionFee): string
+	public function round(string $currencyName, string $commissionFee): string
 	{
 		$digitToRound = $this->cm->getNumberOfDecimalDigitsOfCurrencySmallestItem($currencyName);
 
-		return $this->math->roundSpecificDigitAfterPointToUpperBound($commissionFee, $digitToRound);
+		if ($this->math->checkNumberIsDecimal($commissionFee)) {
+			$commissionFee = $this->math->roundSpecificDigitAfterPointToUpperBound($commissionFee, $digitToRound);
+		} else {
+			$commissionFee = $this->math->convertIntegerToFloat($commissionFee, $digitToRound);
+		}
+
+		return $commissionFee;
 	}
 }

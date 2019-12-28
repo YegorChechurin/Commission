@@ -45,7 +45,7 @@ class CommissionFeeCalculator
 		return $fee;
 	}
 
-	public function calculateCashInCommissionFee(array $operationParams): string
+	/*public function calculateCashInCommissionFee(array $operationParams): string
 	{
 		$commissionParams = $this->cm->getCommissionParameters($operationParams['name']);
 
@@ -66,7 +66,7 @@ class CommissionFeeCalculator
 		}
 
 		return $this->rounder->round($operationParams['currency'], $fee);
-	}
+	}*/
 
 	public function calculateLegalCashOutCommissionFee(array $operationParams): string
 	{
@@ -122,8 +122,7 @@ class CommissionFeeCalculator
 		} else {
 			$fee = $feeInEUR;
 		}
-/*var_dump($fee);
-var_dump($this->rounder->round($operationParams['currency'], $fee));*/
+
 		return $this->rounder->round($operationParams['currency'], $fee);
 	}
 

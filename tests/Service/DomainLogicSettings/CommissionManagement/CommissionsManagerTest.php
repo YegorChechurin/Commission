@@ -21,18 +21,17 @@ class CommissionsManagerTest extends ContainerAwareTestCase
 	/** 
 	 * @dataProvider operationIsSupportedProvider 
 	 */
-	public function testCheckOperationIsSupported(string $operationName)
+	public function testCheckOperationIsSupported(string $operationName, string $userType)
 	{
 		$this->expectException(UnsupportedOperationException::class);
-		$this->expectExceptionMessage($operationName);
 
-		$this->commissionsManager->getCommissionParameters($operationName);
+		$this->commissionsManager->getCommissionParameters($operationName, $userType);
 	}
 
 	public function operationIsSupportedProvider(): array
 	{
 		return [
-			['WhateverOperation'],
+			['WhateverOperation', 'WhateverTypeOfUser'],
 		];
 	}
 }

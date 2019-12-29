@@ -17,7 +17,7 @@ class CommissionsManager extends AbstractSettingsManager
 	private function checkOperationIsSupported(string $operationName, string $userType)
 	{
 		if (!array_key_exists($operationName, $this->settings) || !array_key_exists($userType, $this->settings[$operationName])) {
-			throw new UnsupportedOperationException($operationName);
+			throw new UnsupportedOperationException($operationName, $userType);
 		}
 	}
 }

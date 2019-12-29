@@ -1,7 +1,5 @@
 <?php
 
-//declare(strict_types=1);
-
 namespace YegorChechurin\CommissionTask\Tests\Service;
 
 use PHPUnit\Framework\TestCase;

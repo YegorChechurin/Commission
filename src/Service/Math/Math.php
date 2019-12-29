@@ -1,7 +1,5 @@
 <?php
 
-//declare(strict_types=1);
-
 namespace YegorChechurin\CommissionTask\Service\Math;
 
 use YegorChechurin\CommissionTask\Service\Math\Exception\LogicException\NumberIsNotDecimalException;

@@ -2,51 +2,35 @@
 
 namespace YegorChechurin\CommissionTask\Tests\Service\CommissionFeeCalculation;
 
-use PHPUnit\Framework\TestCase;
-use YegorChechurin\CommissionTask\Service\CommissionFeeCalculation\CommissionFeeCalculator;
-/*use YegorChechurin\CommissionTask\Service\CurrencyConversion\CurrencyConverter;
-use YegorChechurin\CommissionTask\Service\CurrencyConversion\CurrencyConverterInterface;
-use YegorChechurin\CommissionTask\Service\CommissionFeeCalculation\CommissionFeeRounder;*/
-use DI;
-use DI\ContainerBuilder;
+use YegorChechurin\CommissionTask\Tests\ContainerAwareTestCase;
+use YegorChechurin\CommissionTask\Service\CommissionFeeCalculation\CommissionFeeCalculatorFactory;
 
-class CommissionFeeCalculatorTest extends TestCase
+class CommissionFeeCalculatorTest extends ContainerAwareTestCase
 {
 	/**
-     * @var CommissionFeeCalculator
+     * @var CommissionFeeCalculatorFactory
      */
-    private $calculator;
+    private $calculatorFactory;
 
     public function setUp()
     {
-        $builder = new ContainerBuilder();
-        $builder->addDefinitions(
-            dirname(__DIR__, 3).'/config/DI/container.php'
-        );
-        $container = $builder->build();
-
-        $this->calculator = $container->get(CommissionFeeCalculator::class);
+        $this->calculatorFactory = $this->get(CommissionFeeCalculatorFactory::class);
     }
 
     /**
      * @dataProvider operationProvider
      */
     public function testCalculateCommissionFee(array $testData)
-    {//var_dump($testData);
+    {
         foreach ($testData as $data) {
-            //var_dump($data);
             $this->assertEquals(
                 $data['expectation'],
-                $this->calculator->calculateCommissionFee($data['operation'])
+                $this->calculatorFactory
+                    ->getCommissionFeeCalculator($data['operation'])
+                    ->calculateCommissionFee($data['operation'])
             );
         }
     }
-    /*public function testCalculateCommissionFee(array $operationParams, string $expectation){
-        $this->assertEquals(
-            $expectation,
-            $this->calculator->calculateCommissionFee($operationParams)
-        );
-    }*/
 
     public function operationProvider()
     {

@@ -2,39 +2,36 @@
 
 namespace YegorChechurin\CommissionTask\Service\CommissionFeeCalculation;
 
-use YegorChechurin\CommissionTask\Service\CommissionFeeCalculation\AbstractCashOutCommissionFeeCalculator;
-use YegorChechurin\CommissionTask\Service\DomainLogicSettings\CommissionManagement\CommissionsManager;
+use YegorChechurin\CommissionTask\Service\CommissionFeeCalculation\AbstractCommissionFeeCalculator;
 use YegorChechurin\CommissionTask\Service\CurrencyConversion\CurrencyConverterInterface;
 use YegorChechurin\CommissionTask\Service\CommissionFeeCalculation\CommissionFeeRounder;
 use YegorChechurin\CommissionTask\Service\DateTimeOperations\DateChecker;
 
-class NaturalCashOutCommissionFeeCalculator extends AbstractCashOutCommissionFeeCalculator
+class NaturalCashOutCommissionFeeCalculator extends AbstractCommissionFeeCalculator
 {
-	protected $customerType = 'natural';
-
-	private $dateChecker;
-
 	private $feePercentage;
 
 	private $freeOfChargeAmount;
 
-	private $freeOfChargeNumOfOperations;
+	private $freeOfChargeNumberOfOperations;
 
 	private $userHistrory;
 
-	public function __construct(CommissionsManager $cm, CurrencyConverterInterface $cc, CommissionFeeRounder $rounder, DateChecker $dateChecker)
+	private $dateChecker;
+
+	public function __construct($feePercentage, $freeOfChargeAmount, $freeOfChargeNumberOfOperations, CurrencyConverterInterface $cc, CommissionFeeRounder $rounder, DateChecker $dateChecker)
 	{
-		parent::__construct($cm, $cc, $rounder);
+		parent::__construct($cc, $rounder);
 
-		$this->dateChecker = $dateChecker;
+		$this->feePercentage = $feePercentage;
 
-		$this->feePercentage = $this->commissionParameters['fee'];
+		$this->freeOfChargeAmount = $freeOfChargeAmount;
 
-		$this->freeOfChargeAmount = $this->commissionParameters['free_of_charge']['amount'];
-
-		$this->freeOfChargeNumOfOperations = $this->commissionParameters['free_of_charge']['number_of_operations'];
+		$this->freeOfChargeNumberOfOperations = $freeOfChargeNumberOfOperations;
 
 		$this->userHistrory = [];
+
+		$this->dateChecker = $dateChecker;
 	}
 
 	public function calculateCommissionFee(array $operationParams): string
@@ -44,7 +41,7 @@ class NaturalCashOutCommissionFeeCalculator extends AbstractCashOutCommissionFee
 		$operationAmountEUR = $operationParams['amount'];
 
 		if ('EUR' !== $operationParams['currency']) {
-			$operationAmountEUR = $this->cc->convertToEuro($operationParams['currency'], $operationAmountEUR);
+			$operationAmountEUR = $this->convertToEuro($operationParams['currency'], $operationAmountEUR);
 		} 
 
 		if (array_key_exists($userId, $this->userHistrory)) {
@@ -55,19 +52,19 @@ class NaturalCashOutCommissionFeeCalculator extends AbstractCashOutCommissionFee
 
 		$history = $this->userHistrory[$userId];
 
-		if ($history['operation_count'] > $this->freeOfChargeNumOfOperations) {
+		if ($history['operation_count'] > $this->freeOfChargeNumberOfOperations) {
 			$feeInEUR = $this->feePercentage * $operationAmountEUR;
 		} else {
 			$feeInEUR = $this->calculateCommissionFeeInEuroWithDiscount($history, $operationAmountEUR);
 		}
 
 		if ('EUR' !== $operationParams['currency']) {
-			$fee = $this->cc->convertFromEuro($operationParams['currency'], $feeInEUR); 
+			$fee = $this->convertFromEuro($operationParams['currency'], $feeInEUR); 
 		} else {
 			$fee = $feeInEUR;
 		}
 
-		return $this->rounder->round($operationParams['currency'], $fee);
+		return $this->roundCommissionFee($operationParams['currency'], $fee);
 	}
 
 	private function updateUserHistoryRecord(string $userId, string $date, string $operationAmountEUR)

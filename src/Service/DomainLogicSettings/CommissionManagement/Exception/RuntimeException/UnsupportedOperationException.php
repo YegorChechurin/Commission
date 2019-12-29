@@ -4,10 +4,10 @@ namespace YegorChechurin\CommissionTask\Service\DomainLogicSettings\CommissionMa
 
 class UnsupportedOperationException extends \RuntimeException
 {
-	public function __construct(string $operationName)
+	public function __construct(string $operationName, string $userType)
 	{
 		parent::__construct(
-			sprintf('Operation with name "%s" is not supported, it is not possible to calculate commission fee for this operation', $operationName)
+			sprintf('Operation with name "%s" for users of type "%s" is not supported, it is not possible to calculate commission fee for this operation', $operationName, $userType)
 		);
 	}
 }

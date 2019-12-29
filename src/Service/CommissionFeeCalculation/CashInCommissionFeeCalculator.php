@@ -3,39 +3,36 @@
 namespace YegorChechurin\CommissionTask\Service\CommissionFeeCalculation;
 
 use YegorChechurin\CommissionTask\Service\CommissionFeeCalculation\AbstractCommissionFeeCalculator;
-use YegorChechurin\CommissionTask\Service\DomainLogicSettings\CommissionManagement\CommissionsManager;
 use YegorChechurin\CommissionTask\Service\CurrencyConversion\CurrencyConverterInterface;
 use YegorChechurin\CommissionTask\Service\CommissionFeeCalculation\CommissionFeeRounder;
 
 class CashInCommissionFeeCalculator extends AbstractCommissionFeeCalculator
 {
-	protected $operationName = 'cash_in'; 
-
 	private $feePercentage;
 
-	private $feeMaxAmount;
+	private $feeMaximumAmount;
 
-	public function __construct(CommissionsManager $cm, CurrencyConverterInterface $cc, CommissionFeeRounder $rounder)
+	public function __construct($feePercentage, $feeMaximumAmount, CurrencyConverterInterface $cc, CommissionFeeRounder $rounder)
 	{
-		parent::__construct($cm, $cc, $rounder);
+		parent::__construct($cc, $rounder);
 
-		$this->feePercentage = $this->commissionParameters['fee'];
+		$this->feePercentage = $feePercentage;
 		
-		$this->feeMaxAmount = $this->commissionParameters['maximum_amount'];
+		$this->feeMaximumAmount = $feeMaximumAmount;
 	}
 
 	public function calculateCommissionFee(array $operationParams): string
 	{
 		$fee = $this->feePercentage * $operationParams['amount'];
 
-		$feeInEUR = $this->cc->convertToEuro($operationParams['currency'], $fee);
+		$feeInEUR = $this->convertToEuro($operationParams['currency'], $fee);
 
-		if ($feeInEUR > $this->feeMaxAmount) {
-			$feeInEUR = $this->feeMaxAmount;
+		if ($feeInEUR > $this->feeMaximumAmount) {
+			$feeInEUR = $this->feeMaximumAmount;
 		} 
 
-	    $fee = $this->cc->convertFromEuro($operationParams['currency'], $feeInEUR);
+	    $fee = $this->convertFromEuro($operationParams['currency'], $feeInEUR);
 
-		return $this->rounder->round($operationParams['currency'], $fee);
+		return $this->roundCommissionFee($operationParams['currency'], $fee);
 	}
 }

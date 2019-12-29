@@ -7,16 +7,16 @@ use YegorChechurin\CommissionTask\Service\DomainLogicSettings\CommissionManageme
 
 class CommissionsManager extends AbstractSettingsManager
 {
-	public function getCommissionParameters(string $operationName): array
+	public function getCommissionParameters(string $operationName, string $userType): array
 	{
-		$this->checkOperationIsSupported($operationName);
+		$this->checkOperationIsSupported($operationName, $userType);
 
 		return $this->settings[$operationName];
 	}
 
-	private function checkOperationIsSupported(string $operationName)
+	private function checkOperationIsSupported(string $operationName, string $userType)
 	{
-		if (!array_key_exists($operationName, $this->settings)) {
+		if (!array_key_exists($operationName, $this->settings) || !array_key_exists($userType, $this->settings[$operationName])) {
 			throw new UnsupportedOperationException($operationName);
 		}
 	}

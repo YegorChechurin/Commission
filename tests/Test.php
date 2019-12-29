@@ -14,10 +14,19 @@ class Test extends ContainerAwareTestCase
 	}
 
 	public function test()
-	{$this->factory->test();
-		/*echo $this->factory->getCommissionFeeCalculator(
-			['name' => 'cash_without', 'user_type' => 'legal']
-		);*/
+	{//$this->factory->test();
+		var_dump(
+			$this->factory->getCommissionFeeCalculator(
+				[
+                    'date' => '2014-12-31',
+                    'user_id' => '4',
+                    'user_type' => 'natural',
+                    'name' => 'cash_out',
+                    'amount' => '1200.00',
+                    'currency' => 'EUR',
+                ]
+			)
+		);
 
 		$this->assertTrue(true);
 	}

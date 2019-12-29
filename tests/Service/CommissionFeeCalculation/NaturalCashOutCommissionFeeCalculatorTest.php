@@ -3,18 +3,18 @@
 namespace YegorChechurin\CommissionTask\Tests\Service\CommissionFeeCalculation;
 
 use YegorChechurin\CommissionTask\Tests\ContainerAwareTestCase;
-use YegorChechurin\CommissionTask\Service\CommissionFeeCalculation\NaturalCashOutCommissionFeeCalculator;
+use YegorChechurin\CommissionTask\Service\CommissionFeeCalculation\CommissionFeeCalculatorFactory;
 
 class NaturalCashOutCommissionFeeCalculatorTest extends ContainerAwareTestCase
 {
 	/**
-     * @var NaturalCashOutCommissionFeeCalculator
+     * @var CommissionFeeCalculatorFactory
      */
-    private $calculator;
+    private $calculatorFactory;
 
     public function setUp()
     {
-    	$this->calculator = $this->get(NaturalCashOutCommissionFeeCalculator::class);
+        $this->calculatorFactory = $this->get(CommissionFeeCalculatorFactory::class);
     }
 
     /**
@@ -25,7 +25,9 @@ class NaturalCashOutCommissionFeeCalculatorTest extends ContainerAwareTestCase
         foreach ($testData as $data) {
             $this->assertEquals(
                 $data['expectation'],
-                $this->calculator->calculateCommissionFee($data['operation'])
+                $this->calculatorFactory
+                    ->getCommissionFeeCalculator($data['operation'])
+                    ->calculateCommissionFee($data['operation'])
             );
         }
     }

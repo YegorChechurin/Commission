@@ -3,65 +3,49 @@
 namespace YegorChechurin\CommissionTask\Service\CommissionFeeCalculation;
 
 use YegorChechurin\CommissionTask\Service\CommissionFeeCalculation\CommissionFeeCalculatorInterface;
-use YegorChechurin\CommissionTask\Service\CommissionFeeCalculation\CashInCommissionFeeCalculator;
-use YegorChechurin\CommissionTask\Service\CommissionFeeCalculation\LegalCashOutCommissionFeeCalculator;
-use YegorChechurin\CommissionTask\Service\CommissionFeeCalculation\NaturalCashOutCommissionFeeCalculator;
+use YegorChechurin\CommissionTask\Service\DomainLogicSettings\CommissionManagement\CommissionsManager;
 use YegorChechurin\CommissionTask\Service\DI\Container;
-use DI\NotFoundException;
-use DI\ContainerBuilder;
-
-use function DI\autowire;
 
 class CommissionFeeCalculatorFactory
 {
+	/** 
+	 * @var CommissionsManager 
+	 */
+	private $cm;
+
 	private $container;
 
 	private $calculatorPool;
 
-	public function __construct(Container $container)
+	public function __construct(CommissionsManager $cm, Container $container)
 	{
+		$this->cm = $cm;
+
 		$this->container = $container;
 
 		$this->calculatorPool = [];
 	}
 
-	public function test()
+	public function getCommissionFeeCalculator(array $operationParameters): CommissionFeeCalculatorInterface
 	{
-		$builder = new ContainerBuilder();
-        $builder->addDefinitions(
-        	['YegorChechurin\\CommissionTask\\TestClass' => autowire()
-        ->constructorParameter('test', 'This test is successful!'),]
-        );
-        $container = $builder->build();
-        $container->get('YegorChechurin\\CommissionTask\\TestClass');
-	}
+		$commissionParams = $this->cm->getCommissionParameters($operationParameters['name'], $operationParameters['user_type']);
 
-	public function getCommissionFeeCalculator(array $operationParameters)//: CommissionFeeCalculatorInterface
-	{
-		$calculatorClassName = $this->getCalculatorClassName($operationParameters['name'], $operationParameters['user_type']);
-		return $this->createCalculator($calculatorClassName); //$this->container->get(NaturalCashOutCommissionFeeCalculator::class);
-	}
+		$calculatorClassName = $this->getCalculatorClassName($operationParameters['name'], $operationParameters['user_type'], $commissionParams);
 
-	private function createCalculator(string $calculatorClassName)
-	{
-		try {
-			$calculator = $this->container->get($calculatorClassName);
-			
-			//$this->calculatorPool[] = ;
-		} catch(NotFoundException $e) {
-			list($namespace, $calculatorName) = explode(__NAMESPACE__.'\\', $calculatorClassName);
-			var_dump($calculatorName);
-			//throw new CommissionFeeCalculatorForThisOperationDoesNotExistException($fileExtension);
+		if (!$this->hasCalculatorInPool($calculatorClassName)) {
+			$this->createCalculator($calculatorClassName, $commissionParams, $operationParameters['name'], $operationParameters['user_type']);
 		}
+
+		return $this->calculatorPool[$calculatorClassName];
 	}
 
-	private function getCalculatorClassName(string $operationName, string $customerType): string
+	private function getCalculatorClassName(string $operationName, string $customerType, array $commissionParameters): string
 	{
 		$calculatorName = 'CommissionFeeCalculator';
 
 		$calculatorName = $this->getOperationNamePrefix($operationName).$calculatorName;
 
-		if ('cash_out' === $operationName) {
+		if ($commissionParameters['legal'] !== $commissionParameters['natural']) {
 			$calculatorName = $this->getUserTypePrefix($customerType).$calculatorName;
 		}
 
@@ -81,5 +65,44 @@ class CommissionFeeCalculatorFactory
 	private function getUserTypePrefix(string $customerType): string
 	{
 		return ucfirst($customerType);
+	}
+
+	private function hasCalculatorInPool(string $calculatorClassName): bool
+	{
+		if (array_key_exists($calculatorClassName, $this->calculatorPool)) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	private function createCalculator(string $calculatorClassName, array $commissionParameters, string $operationName, string $userType)
+	{
+		if (!$this->container->has($calculatorClassName)) {
+			throw new CommissionFeeCalculatorForThisOperationDoesNotExistException($operationName, $userType);
+		} 
+
+		$this->calculatorPool[$calculatorClassName] = $this->container->get(
+			$calculatorClassName, 
+			$this->getCalculatorParameters($commissionParameters[$userType])
+		);
+	}
+
+	private function getCalculatorParameters(array $commissionParameters): array
+	{
+		$parameterNamesSnakeCase = array_keys($commissionParameters);
+
+		$parameterNamesCamelCase = [];
+		for ($i = 0; $i < count($parameterNamesSnakeCase); $i++) { 
+			$parts = explode('_', $parameterNamesSnakeCase[$i]);
+
+			for ($j = 1; $j < count($parts); $j++) { 
+				$parts[$j] = ucfirst($parts[$j]);
+			}
+
+			$parameterNamesCamelCase[$i] = implode('', $parts);
+		}
+
+		return array_combine($parameterNamesCamelCase, array_values($commissionParameters));
 	}
 }

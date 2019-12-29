@@ -3,18 +3,11 @@
 namespace YegorChechurin\CommissionTask\Service\CommissionFeeCalculation;
 
 use YegorChechurin\CommissionTask\Service\CommissionFeeCalculation\CommissionFeeCalculatorInterface;
-use YegorChechurin\CommissionTask\Service\DomainLogicSettings\CommissionManagement\CommissionsManager;
 use YegorChechurin\CommissionTask\Service\CurrencyConversion\CurrencyConverterInterface;
 use YegorChechurin\CommissionTask\Service\CommissionFeeCalculation\CommissionFeeRounder;
-use YegorChechurin\CommissionTask\Service\CommissionFeeCalculation\Exception\LogicException\OperationNameIsNotSetException;
 
 abstract class AbstractCommissionFeeCalculator implements CommissionFeeCalculatorInterface
 {
-	/** 
-	 * @var CommissionsManager 
-	 */
-	protected $cm;
-
 	/** 
 	 * @var CurrencyConverter 
 	 */
@@ -25,39 +18,27 @@ abstract class AbstractCommissionFeeCalculator implements CommissionFeeCalculato
 	 */
 	protected $rounder;
 
-	protected $commissionParameters;
-
-	protected $operationName;
-
 	abstract public function calculateCommissionFee(array $operationParameters): string;
 
-	public function __construct(CommissionsManager $cm, CurrencyConverterInterface $cc, CommissionFeeRounder $rounder)
+	public function __construct(CurrencyConverterInterface $cc, CommissionFeeRounder $rounder)
 	{
-		$this->cm = $cm;
-
 		$this->cc = $cc;
 
 		$this->rounder = $rounder;
-
-		$this->commissionParameters = $this->getCommissionParameters();
 	}
 
-	protected function getCommissionParameters(): array
+	protected function convertToEuro(string $currencyName, $amount)
 	{
-		$this->checkOperationNameIsSet();
-
-		return $this->cm->getCommissionParameters($this->operationName);
+		return $this->cc->convertToEuro($currencyName, $amount);
 	}
 
-	protected function checkOperationNameIsSet()
+	protected function convertFromEuro(string $currencyName, $amount)
 	{
-		if (!$this->operationName) {
-			throw new OperationNameIsNotSetException($this->getThisClassName());
-		}
+		return $this->cc->convertFromEuro($currencyName, $amount);
 	}
 
-	protected function getThisClassName(): string
+	protected function roundCommissionFee(string $currencyName, string $commissionFee): string
 	{
-		return (new \ReflectionClass($this))->getName();
+		return $this->rounder->round($currencyName, $commissionFee);
 	}
 }

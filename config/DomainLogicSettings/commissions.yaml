@@ -1,12 +1,15 @@
 cash_in:
-  fee: 0.0003
-  maximum_amount: 5
+  legal:
+    fee_percentage: 0.0003
+    fee_maximum_amount: 5
+  natural:
+    fee_percentage: 0.0003
+    fee_maximum_amount: 5
 cash_out:
   legal:
-    fee: 0.003
-    minimum_amount: 0.5
+    fee_percentage: 0.003
+    fee_minimum_amount: 0.5
   natural:
-    fee: 0.003
-    free_of_charge:
-      amount: 1000
-      number_of_operations: 3
+    fee_percentage: 0.003
+    free_of_charge_amount: 1000
+    free_of_charge_number_of_operations: 3

@@ -68,7 +68,7 @@ class CommissionFeeCalculator
 		return $this->rounder->round($operationParams['currency'], $fee);
 	}*/
 
-	public function calculateLegalCashOutCommissionFee(array $operationParams): string
+	/*public function calculateLegalCashOutCommissionFee(array $operationParams): string
 	{
 		$commissionParams = $this->cm->getCommissionParameters($operationParams['name']);
 
@@ -89,7 +89,7 @@ class CommissionFeeCalculator
 		}
 
 		return $this->rounder->round($operationParams['currency'], $fee);
-	}
+	}*/
 
 	public function calculateNaturalCashOutCommissionFee(array $operationParams): string
 	{

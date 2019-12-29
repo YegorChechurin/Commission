@@ -52,7 +52,7 @@ abstract class AbstractCommissionFeeCalculator implements CommissionFeeCalculato
 	protected function checkOperationNameIsSet()
 	{
 		if (!$this->operationName) {
-			throw new OperationNameIsNotSetException(getThisClassName());
+			throw new OperationNameIsNotSetException($this->getThisClassName());
 		}
 	}
 

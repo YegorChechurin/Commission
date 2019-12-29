@@ -2,20 +2,22 @@
 
 namespace YegorChechurin\CommissionTask\Tests;
 
-use YegorChechurin\CommissionTask\Service\CurrencyConversion\CurrencyConverter;
+use YegorChechurin\CommissionTask\Service\CommissionFeeCalculation\CommissionFeeCalculatorFactory;
 
 class Test extends ContainerAwareTestCase
 {
-	private $currencyConverter;
+	private $factory;
 
 	public function setUp()
 	{
-		$this->currencyConverter = $this->container->get(CurrencyConverter::class);
+		$this->factory = $this->get(CommissionFeeCalculatorFactory::class);
 	}
 
 	public function test()
-	{
-		var_dump($this->currencyConverter->convertFromEuro('EUR', 100500));
+	{$this->factory->test();
+		/*echo $this->factory->getCommissionFeeCalculator(
+			['name' => 'cash_without', 'user_type' => 'legal']
+		);*/
 
 		$this->assertTrue(true);
 	}

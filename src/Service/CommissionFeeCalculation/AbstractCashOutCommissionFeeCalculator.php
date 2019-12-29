@@ -6,6 +6,8 @@ use YegorChechurin\CommissionTask\Service\CommissionFeeCalculation\AbstractCommi
 
 abstract class AbstractCashOutCommissionFeeCalculator extends AbstractCommissionFeeCalculator
 {
+	protected $operationName = 'cash_out';
+	
 	protected $customerType;
 
 	protected function getCommissionParameters(): array

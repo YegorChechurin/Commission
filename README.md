@@ -1,15 +1,15 @@
-Command to run commission fee calculation:
+Command to run commission fee calculation: <br/>
 composer calculate-commissions path/to/operations/file.csv
 
-In order to demonstrate how the systems runs I provide a test.csv file 
+In order to demonstrate how the systems runs I provide test.csv file 
 in tests folder of this project, so if you want to run the system, you type the following command in your terminal (1 - Linux, 2 - Windows):
 1) composer calculate-commissions wherever/you/clone/the/project/Commission/tests/test.csv
 2) composer calculate-commissions wherever\you\clone\the\project\Commission\tests\test.csv
 
-In order to run the tests:
-composer phpunit - all the phpunit tests
-composer test-cs - for php-cs-fixer checks
-composer test - for both phpunit and php-cs-fixer
+In order to run the tests: <br/>
+composer phpunit - all the phpunit tests <br/>
+composer test-cs - for php-cs-fixer checks <br/>
+composer test - for both phpunit and php-cs-fixer <br/>
 
 At the moment only phpunit tests pass. If you give me some more time, I will check the code syntax in order to fix the php-cs-fixer checks.
 

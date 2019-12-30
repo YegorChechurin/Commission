@@ -1,11 +1,16 @@
-# Paysera Commission task skeleton
+Command to run commission fee calculation:
+composer calculate-commissions path/to/operations/file.csv
 
-Following steps:
-- don't forget to change `Paysera` namespace and package name in `composer.json`
- to your own, as `Paysera` keyword should not be used anywhere in your task;
-- `\Paysera\CommissionTask\Service\Math` is an example class provided for the skeleton and could or could not be used by your preference;
-- needed scripts could be found inside `composer.json`;
-- before submitting the task make sure that all the scripts pass (`composer run test` in particular);
-- this file should be updated before submitting the task with the documentation on how to run your program.
+In order to demonstrate how the systems runs I provide a test.csv file 
+in tests folder of this project, so if you want to run the system, you type the following command in your terminal (1 - Linux, 2 - Windows):
+1) composer calculate-commissions wherever/you/clone/the/project/Commission/tests/test.csv
+2) composer calculate-commissions wherever\you\clone\the\project\Commission\tests\test.csv
 
-Good luck! :) 
+In order to run the tests:
+composer phpunit - all the phpunit tests
+composer test-cs - for php-cs-fixer checks
+composer test - for both phpunit and php-cs-fixer
+
+At the moment only phpunit tests pass. If you give me some more time, I will check the code syntax in order to fix the php-cs-fixer checks.
+
+It was fun doing your task, hope you like the solution I came up with :)

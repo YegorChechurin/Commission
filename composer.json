@@ -32,6 +32,10 @@
         "fix-cs": "php-cs-fixer fix",
         "test-cs": "php-cs-fixer fix --dry-run -v",
         "test": ["@phpunit", "@test-cs"],
-        "calculate-commissions": "@php src/Controller/CommissionFeeCalculationController.php"
+        "calculate-commissions": [
+            "@composer install",
+            "@composer dump-autoload -o",
+            "@php src/Controller/CommissionFeeCalculationController.php"
+        ]
     }
 }

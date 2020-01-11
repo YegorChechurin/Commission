@@ -2,103 +2,75 @@
 
 namespace YegorChechurin\CommissionTask\Service\CommissionFeeCalculation;
 
-use YegorChechurin\CommissionTask\Service\CommissionFeeCalculation\AbstractCommissionFeeCalculator;
 use YegorChechurin\CommissionTask\Service\CurrencyConversion\CurrencyConverterInterface;
-use YegorChechurin\CommissionTask\Service\CommissionFeeCalculation\CommissionFeeRounder;
-use YegorChechurin\CommissionTask\Service\DateTimeOperations\DateChecker;
 
 class NaturalCashOutCommissionFeeCalculator extends AbstractCommissionFeeCalculator
 {
-	private $feePercentage;
+    private $feePercentage;
 
-	private $freeOfChargeAmount;
+    private $freeOfChargeAmount;
 
-	private $freeOfChargeNumberOfOperations;
+    private $freeOfChargeNumberOfOperations;
 
-	private $userHistrory;
+    /**
+     * @var NaturalUserCashOutHistoryHandler
+     */
+    private $userHistoryHandler;
 
-	private $dateChecker;
+    public function __construct($feePercentage, $freeOfChargeAmount, $freeOfChargeNumberOfOperations,
+                                CurrencyConverterInterface $cc, CommissionFeeRounder $rounder,
+                                NaturalUserCashOutHistoryHandler $userHistoryHandler)
+    {
+        parent::__construct($cc, $rounder);
 
-	public function __construct($feePercentage, $freeOfChargeAmount, $freeOfChargeNumberOfOperations, CurrencyConverterInterface $cc, CommissionFeeRounder $rounder, DateChecker $dateChecker)
-	{
-		parent::__construct($cc, $rounder);
+        $this->feePercentage = $feePercentage;
 
-		$this->feePercentage = $feePercentage;
+        $this->freeOfChargeAmount = $freeOfChargeAmount;
 
-		$this->freeOfChargeAmount = $freeOfChargeAmount;
+        $this->freeOfChargeNumberOfOperations = $freeOfChargeNumberOfOperations;
 
-		$this->freeOfChargeNumberOfOperations = $freeOfChargeNumberOfOperations;
+        $this->userHistoryHandler = $userHistoryHandler;
+    }
 
-		$this->userHistrory = [];
+    public function calculateCommissionFee(array $operationParams): string
+    {
+        $userId = $operationParams['user_id'];
+        $date = $operationParams['date'];
+        $operationAmountEUR = $operationParams['amount'];
 
-		$this->dateChecker = $dateChecker;
-	}
+        if ('EUR' !== $operationParams['currency']) {
+            $operationAmountEUR = $this->convertToEuro($operationParams['currency'], $operationAmountEUR);
+        }
 
-	public function calculateCommissionFee(array $operationParams): string
-	{
-		$userId = $operationParams['user_id'];
-		$date = $operationParams['date'];
-		$operationAmountEUR = $operationParams['amount'];
+        $history = $this->userHistoryHandler->getUserOperationsHistory($userId, $date, $operationAmountEUR);
 
-		if ('EUR' !== $operationParams['currency']) {
-			$operationAmountEUR = $this->convertToEuro($operationParams['currency'], $operationAmountEUR);
-		} 
+        if ($history['operation_count'] > $this->freeOfChargeNumberOfOperations) {
+            $feeInEUR = $this->feePercentage * $operationAmountEUR;
+        } else {
+            $feeInEUR = $this->calculateCommissionFeeInEuroWithDiscount($history, $operationAmountEUR);
+        }
 
-		if (array_key_exists($userId, $this->userHistrory)) {
-			$this->updateUserHistoryRecord($userId, $date, $operationAmountEUR);
-		} else {
-			$this->createUserHistoryRecord($userId, $date, $operationAmountEUR);
-		}
+        if ('EUR' !== $operationParams['currency']) {
+            $fee = $this->convertFromEuro($operationParams['currency'], $feeInEUR);
+        } else {
+            $fee = $feeInEUR;
+        }
 
-		$history = $this->userHistrory[$userId];
+        return $this->roundCommissionFee($operationParams['currency'], $fee);
+    }
 
-		if ($history['operation_count'] > $this->freeOfChargeNumberOfOperations) {
-			$feeInEUR = $this->feePercentage * $operationAmountEUR;
-		} else {
-			$feeInEUR = $this->calculateCommissionFeeInEuroWithDiscount($history, $operationAmountEUR);
-		}
+    private function calculateCommissionFeeInEuroWithDiscount(array $history, string $operationAmountEUR): string
+    {
+        $feeInEUR = '0.00';
 
-		if ('EUR' !== $operationParams['currency']) {
-			$fee = $this->convertFromEuro($operationParams['currency'], $feeInEUR); 
-		} else {
-			$fee = $feeInEUR;
-		}
+        if ($history['total_amount_in_euro'] - $operationAmountEUR > $this->freeOfChargeAmount) {
+            $feeInEUR = $this->feePercentage * $operationAmountEUR;
+        } else {
+            if ($history['total_amount_in_euro'] > $this->freeOfChargeAmount) {
+                $feeInEUR = $this->feePercentage * ($history['total_amount_in_euro'] - $this->freeOfChargeAmount);
+            }
+        }
 
-		return $this->roundCommissionFee($operationParams['currency'], $fee);
-	}
-
-	private function updateUserHistoryRecord(string $userId, string $date, string $operationAmountEUR)
-	{
-		if (!$this->dateChecker->checkDatesAreOnSameWeek($date, $this->userHistrory[$userId]['date'])) {
-			$this->createUserHistoryRecord($userId, $date, $operationAmountEUR);
-		} else {
-			$this->userHistrory[$userId]['operation_count']++;
-			$this->userHistrory[$userId]['total_amount_in_euro'] += $operationAmountEUR;
-			$this->userHistrory[$userId]['date'] = $date;
-		}
-	}
-
-	private function createUserHistoryRecord(string $userId, string $date, string $operationAmountEUR)
-	{
-		$this->userHistrory[$userId] = [
-				'operation_count' => 1,
-				'date' => $date,
-				'total_amount_in_euro' => $operationAmountEUR,
-			];
-	}
-
-	private function calculateCommissionFeeInEuroWithDiscount(array $history, string $operationAmountEUR): string
-	{
-		$feeInEUR = '0.00';
-
-		if ($history['total_amount_in_euro'] - $operationAmountEUR > $this->freeOfChargeAmount) {
-			$feeInEUR = $this->feePercentage * $operationAmountEUR;
-		} else {
-			if ($history['total_amount_in_euro'] > $this->freeOfChargeAmount) {
-				$feeInEUR = $this->feePercentage * ($history['total_amount_in_euro'] - $this->freeOfChargeAmount);
-			}
-		}
-
-		return $feeInEUR;
-	}
+        return $feeInEUR;
+    }
 }

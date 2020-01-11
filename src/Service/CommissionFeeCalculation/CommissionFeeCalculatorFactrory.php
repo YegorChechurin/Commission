@@ -3,6 +3,7 @@
 namespace YegorChechurin\CommissionTask\Service\CommissionFeeCalculation;
 
 use YegorChechurin\CommissionTask\Service\CommissionFeeCalculation\CommissionFeeCalculatorInterface;
+use YegorChechurin\CommissionTask\Service\CommissionFeeCalculation\Exception\LogicException\CommissionFeeCalculatorForThisOperationDoesNotExistException;
 use YegorChechurin\CommissionTask\Service\DomainLogicSettings\CommissionManagement\CommissionsManager;
 use YegorChechurin\CommissionTask\Service\DI\Container;
 

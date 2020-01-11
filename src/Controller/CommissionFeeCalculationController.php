@@ -4,13 +4,13 @@ namespace YegorChechurin\CommissionTask\Controller;
 
 require dirname(__DIR__, 2) . '/vendor/autoload.php';
 
-use YegorChechurin\CommissionTask\Service\DI\Container;
-use YegorChechurin\CommissionTask\Service\CommissionFeeCalculation\CommissionFeeCalculatorFactory;
+use YegorChechurin\CommissionTask\Service\CommissionFeeCalculation\CommissionFeeCalculatorFactory\CommissionFeeCalculatorFactoryInterface;
 use YegorChechurin\CommissionTask\Service\CommissionFeeCalculation\OperationsFileReader;
+use YegorChechurin\CommissionTask\Service\DI\Container;
 
 $container = new Container();
 
-$commissionFeeCalculatorFactory = $container->get(CommissionFeeCalculatorFactory::class);
+$commissionFeeCalculatorFactory = $container->get(CommissionFeeCalculatorFactoryInterface::class);
 
 $operationsFileReader = $container->get(OperationsFileReader::class);
 

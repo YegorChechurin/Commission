@@ -2,19 +2,16 @@
 
 namespace YegorChechurin\CommissionTask\Tests\Service\CommissionFeeCalculation;
 
+use YegorChechurin\CommissionTask\Service\CommissionFeeCalculation\CommissionFeeCalculatorFactory\CommissionFeeCalculatorFactoryInterface;
 use YegorChechurin\CommissionTask\Tests\ContainerAwareTestCase;
-use YegorChechurin\CommissionTask\Service\CommissionFeeCalculation\CommissionFeeCalculatorFactory;
 
 class CashInCommissionFeeCalculatorTest extends ContainerAwareTestCase
 {
-	/**
-     * @var CommissionFeeCalculatorFactory
-     */
     private $calculatorFactory;
 
     public function setUp()
     {
-        $this->calculatorFactory = $this->get(CommissionFeeCalculatorFactory::class);
+        $this->calculatorFactory = $this->get(CommissionFeeCalculatorFactoryInterface::class);
     }
 
     /**

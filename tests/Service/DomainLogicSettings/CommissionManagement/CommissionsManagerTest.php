@@ -18,20 +18,85 @@ class CommissionsManagerTest extends ContainerAwareTestCase
 		$this->commissionsManager = $this->get(CommissionsManager::class);
 	}
 
-	/** 
-	 * @dataProvider operationIsSupportedProvider 
-	 */
-	public function testCheckOperationIsSupported(string $operationName, string $userType)
+	public function testCheckOperationIsSupportedExceptional()
 	{
 		$this->expectException(UnsupportedOperationException::class);
 
-		$this->commissionsManager->getCommissionParameters($operationName, $userType);
+		$this->commissionsManager->getCommissionParameters('WhateverOperation', 'WhateverTypeOfUser');
 	}
 
-	public function operationIsSupportedProvider(): array
+    /**
+     * @dataProvider operationProvider
+     */
+    public function testGetCommissionParameters(string $operationName, string $userType, array $expectation)
+    {
+        $this->assertEquals(
+            $expectation,
+            $this->commissionsManager->getCommissionParameters($operationName, $userType)
+        );
+    }
+
+	public function operationProvider(): array
 	{
 		return [
-			['WhateverOperation', 'WhateverTypeOfUser'],
+			[
+			    'cash_in',
+                'legal',
+                [
+                    'legal' => [
+                        'fee_percentage' => 0.0003,
+                        'fee_maximum_amount' => 5,
+                    ],
+                    'natural' => [
+                        'fee_percentage' => 0.0003,
+                        'fee_maximum_amount' => 5,
+                    ],
+                ],
+            ],
+            [
+                'cash_in',
+                'natural',
+                [
+                    'legal' => [
+                        'fee_percentage' => 0.0003,
+                        'fee_maximum_amount' => 5,
+                    ],
+                    'natural' => [
+                        'fee_percentage' => 0.0003,
+                        'fee_maximum_amount' => 5,
+                    ],
+                ],
+            ],
+            [
+                'cash_out',
+                'legal',
+                [
+                    'legal' => [
+                        'fee_percentage' => 0.003,
+                        'fee_minimum_amount' => 0.5,
+                    ],
+                    'natural' => [
+                        'fee_percentage' => 0.003,
+                        'free_of_charge_amount' => 1000,
+                        'free_of_charge_number_of_operations' => 3,
+                    ],
+                ],
+            ],
+            [
+                'cash_out',
+                'natural',
+                [
+                    'legal' => [
+                        'fee_percentage' => 0.003,
+                        'fee_minimum_amount' => 0.5,
+                    ],
+                    'natural' => [
+                        'fee_percentage' => 0.003,
+                        'free_of_charge_amount' => 1000,
+                        'free_of_charge_number_of_operations' => 3,
+                    ],
+                ],
+            ],
 		];
 	}
 }

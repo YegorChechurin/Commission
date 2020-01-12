@@ -1,13 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace YegorChechurin\CommissionTask\Service\DomainLogicSettings;
 
 abstract class AbstractSettingsManager
 {
-	protected $settings;
+    protected $settings;
 
-	public function __construct(SettingsFetcher $settingsFetcher)
-	{
-		$this->settings = $settingsFetcher->fetchSettings($this);
-	}
+    public function __construct(SettingsFetcher $settingsFetcher)
+    {
+        $this->settings = $settingsFetcher->fetchSettings($this);
+    }
 }

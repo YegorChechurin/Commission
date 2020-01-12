@@ -1,55 +1,56 @@
 <?php
 
+declare(strict_types=1);
+
 namespace YegorChechurin\CommissionTask\Service\DI;
 
+use function DI\autowire;
 use DI\Container as ActualContainer;
 use DI\ContainerBuilder;
 
-use function DI\autowire;
-
 class Container
 {
-	private const NUMBER_OF_DIR_TO_GO_UP = 3;
+    private const NUMBER_OF_DIR_TO_GO_UP = 3;
 
-	private const CONFIG_FILE_LOCATION = '/config/DI/container.php';
-	
-	/** 
-	 * @var ActualContainer
-	 */
-	private $container;
+    private const CONFIG_FILE_LOCATION = '/config/DI/container.php';
 
-	public function __construct()
-	{
-		$this->bootContainer();
-	}
+    /**
+     * @var ActualContainer
+     */
+    private $container;
 
-	public function has(string $className): bool
-	{
-		return $this->container->has($className);
-	}
+    public function __construct()
+    {
+        $this->bootContainer();
+    }
 
-	public function get(string $className, ?array $classConstructorParameters = null)
-	{
-		if ($classConstructorParameters) {
-			$definitions = autowire();
+    public function has(string $className): bool
+    {
+        return $this->container->has($className);
+    }
 
-			foreach ($classConstructorParameters as $key => $value) {
-				$definitions->constructorParameter($key, $value);
-			}
+    public function get(string $className, ?array $classConstructorParameters = null)
+    {
+        if ($classConstructorParameters) {
+            $definitions = autowire();
 
-			$this->container->set($className, $definitions);
-		}
+            foreach ($classConstructorParameters as $key => $value) {
+                $definitions->constructorParameter($key, $value);
+            }
 
-		return $this->container->get($className);
-	}
+            $this->container->set($className, $definitions);
+        }
 
-	private function bootContainer()
-	{
-		$builder = new ContainerBuilder();
+        return $this->container->get($className);
+    }
+
+    private function bootContainer()
+    {
+        $builder = new ContainerBuilder();
         $builder->addDefinitions(
             dirname(__DIR__, self::NUMBER_OF_DIR_TO_GO_UP).self::CONFIG_FILE_LOCATION
         );
 
         $this->container = $builder->build();
-	}
+    }
 }

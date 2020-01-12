@@ -6,17 +6,17 @@ namespace YegorChechurin\CommissionTask\Service\CurrencyConversion;
 
 final class CurrencyConverter extends AbstractCurrencyConverter
 {
-	public function convertFromEuro(string $currencyName, $eurAmount)
-	{
-		$rate = $this->cm->getCurrencyConversionRate($currencyName);
+    public function convertFromEuro(string $currencyName, $eurAmount): string
+    {
+        $rate = $this->cm->getCurrencyConversionRate($currencyName);
 
-		return $eurAmount * $rate;
-	}
+        return (string) ($eurAmount * $rate);
+    }
 
-	public function convertToEuro(string $currencyName, $currencyAmount)
-	{
-		$rate = 1 / $this->cm->getCurrencyConversionRate($currencyName);
-		
-		return $currencyAmount * $rate;
-	}
+    public function convertToEuro(string $currencyName, $currencyAmount): string
+    {
+        $rate = 1 / $this->cm->getCurrencyConversionRate($currencyName);
+
+        return (string) ($currencyAmount * $rate);
+    }
 }

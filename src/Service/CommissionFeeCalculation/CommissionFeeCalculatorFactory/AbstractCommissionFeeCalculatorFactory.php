@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace YegorChechurin\CommissionTask\Service\CommissionFeeCalculation\CommissionFeeCalculatorFactory;
 
 use YegorChechurin\CommissionTask\Service\CommissionFeeCalculation\CommissionFeeCalculatorInterface;
@@ -73,10 +75,10 @@ abstract class AbstractCommissionFeeCalculatorFactory implements CommissionFeeCa
         $parameterNamesSnakeCase = array_keys($commissionParameters);
 
         $parameterNamesCamelCase = [];
-        for ($i = 0; $i < count($parameterNamesSnakeCase); $i++) {
+        for ($i = 0; $i < count($parameterNamesSnakeCase); ++$i) {
             $parts = explode('_', $parameterNamesSnakeCase[$i]);
 
-            for ($j = 1; $j < count($parts); $j++) {
+            for ($j = 1; $j < count($parts); ++$j) {
                 $parts[$j] = ucfirst($parts[$j]);
             }
 

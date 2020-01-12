@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace YegorChechurin\CommissionTask\Service\CommissionFeeCalculation;
 
 use YegorChechurin\CommissionTask\Service\CurrencyConversion\CurrencyConverterInterface;
@@ -56,7 +58,7 @@ class NaturalCashOutCommissionFeeCalculator extends AbstractCommissionFeeCalcula
             $fee = $feeInEUR;
         }
 
-        return $this->roundCommissionFee($operationParams['currency'], $fee);
+        return $this->roundCommissionFee($operationParams['currency'], (string) $fee);
     }
 
     private function calculateCommissionFeeInEuroWithDiscount(array $history, string $operationAmountEUR): string
@@ -71,6 +73,6 @@ class NaturalCashOutCommissionFeeCalculator extends AbstractCommissionFeeCalcula
             }
         }
 
-        return $feeInEUR;
+        return (string) $feeInEUR;
     }
 }

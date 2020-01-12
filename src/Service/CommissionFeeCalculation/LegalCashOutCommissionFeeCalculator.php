@@ -1,38 +1,38 @@
 <?php
 
+declare(strict_types=1);
+
 namespace YegorChechurin\CommissionTask\Service\CommissionFeeCalculation;
 
-use YegorChechurin\CommissionTask\Service\CommissionFeeCalculation\AbstractCommissionFeeCalculator;
 use YegorChechurin\CommissionTask\Service\CurrencyConversion\CurrencyConverterInterface;
-use YegorChechurin\CommissionTask\Service\CommissionFeeCalculation\CommissionFeeRounder;
 
 class LegalCashOutCommissionFeeCalculator extends AbstractCommissionFeeCalculator
 {
-	private $feePercentage;
+    private $feePercentage;
 
-	private $feeMinimumAmount;
+    private $feeMinimumAmount;
 
-	public function __construct($feePercentage, $feeMinimumAmount, CurrencyConverterInterface $cc, CommissionFeeRounder $rounder)
-	{
-		parent::__construct($cc, $rounder);
+    public function __construct($feePercentage, $feeMinimumAmount, CurrencyConverterInterface $cc, CommissionFeeRounder $rounder)
+    {
+        parent::__construct($cc, $rounder);
 
-		$this->feePercentage = $feePercentage;
-		
-		$this->feeMinimumAmount = $feeMinimumAmount;
-	}
+        $this->feePercentage = $feePercentage;
 
-	public function calculateCommissionFee(array $operationParams): string
-	{
-		$fee = $this->feePercentage * $operationParams['amount'];
+        $this->feeMinimumAmount = $feeMinimumAmount;
+    }
 
-		$feeInEUR = $this->convertToEuro($operationParams['currency'], $fee);
+    public function calculateCommissionFee(array $operationParams): string
+    {
+        $fee = $this->feePercentage * $operationParams['amount'];
 
-		if ($feeInEUR < $this->feeMinimumAmount) {
-			$feeInEUR = $this->feeMinimumAmount;
-		} 
+        $feeInEUR = $this->convertToEuro($operationParams['currency'], $fee);
 
-		$fee = $this->convertFromEuro($operationParams['currency'], $feeInEUR);
+        if ($feeInEUR < $this->feeMinimumAmount) {
+            $feeInEUR = $this->feeMinimumAmount;
+        }
 
-		return $this->roundCommissionFee($operationParams['currency'], $fee);
-	}
+        $fee = $this->convertFromEuro($operationParams['currency'], $feeInEUR);
+
+        return $this->roundCommissionFee($operationParams['currency'], (string) $fee);
+    }
 }

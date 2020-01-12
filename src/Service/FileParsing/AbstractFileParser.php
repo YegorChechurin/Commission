@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace YegorChechurin\CommissionTask\Service\FileParsing;
 
 use YegorChechurin\CommissionTask\Service\FileParsing\Exception\LogicException\CorrectFileExtensionIsNotSetException;
@@ -7,31 +9,31 @@ use YegorChechurin\CommissionTask\Service\FileParsing\Exception\LogicException\F
 
 abstract class AbstractFileParser implements FileParserInterface
 {
-	protected $correctFileExtension;
+    protected $correctFileExtension;
 
-	abstract protected function readFile(string $filePath, ?array $parsingParameters): array;
+    abstract protected function readFile(string $filePath, ?array $parsingParameters): array;
 
-	public function parseFile(string $filePath, ?array $parsingParameters = null): array
-	{
-		$this->checkCorrectFileExtensionIsSet();
-		$this->checkFileExtensionIsCorrect($filePath);
+    public function parseFile(string $filePath, ?array $parsingParameters = null): array
+    {
+        $this->checkCorrectFileExtensionIsSet();
+        $this->checkFileExtensionIsCorrect($filePath);
 
-		return $this->readFile($filePath, $parsingParameters);
-	}
+        return $this->readFile($filePath, $parsingParameters);
+    }
 
-	protected function checkCorrectFileExtensionIsSet(): void
-	{
-		if (!$this->correctFileExtension) {
-			$fileParserClassName = (new \ReflectionClass($this))->getName();
-			
-			throw new CorrectFileExtensionIsNotSetException($fileParserClassName);
-		}
-	}
+    protected function checkCorrectFileExtensionIsSet(): void
+    {
+        if (!$this->correctFileExtension) {
+            $fileParserClassName = (new \ReflectionClass($this))->getName();
 
-	protected function checkFileExtensionIsCorrect(string $filePath): void
-	{
-		if ($this->correctFileExtension !== pathinfo($filePath, \PATHINFO_EXTENSION)) {
-			throw new FileExtensionIsNotCorrectException(pathinfo($filePath, \PATHINFO_EXTENSION), $this->correctFileExtension);
-		}
-	}
-} 
+            throw new CorrectFileExtensionIsNotSetException($fileParserClassName);
+        }
+    }
+
+    protected function checkFileExtensionIsCorrect(string $filePath): void
+    {
+        if ($this->correctFileExtension !== pathinfo($filePath, \PATHINFO_EXTENSION)) {
+            throw new FileExtensionIsNotCorrectException(pathinfo($filePath, \PATHINFO_EXTENSION), $this->correctFileExtension);
+        }
+    }
+}

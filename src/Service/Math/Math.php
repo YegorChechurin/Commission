@@ -1,10 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace YegorChechurin\CommissionTask\Service\Math;
 
+use YegorChechurin\CommissionTask\Service\Math\Exception\LogicException\InvalidPostionAfterPointException;
 use YegorChechurin\CommissionTask\Service\Math\Exception\LogicException\NumberIsNotDecimalException;
 use YegorChechurin\CommissionTask\Service\Math\Exception\RuntimeException\CheckNumberIsDecimalException;
-use YegorChechurin\CommissionTask\Service\Math\Exception\LogicException\InvalidPostionAfterPointException;
 
 class Math
 {
@@ -18,7 +20,7 @@ class Math
             throw new InvalidPostionAfterPointException();
         }
 
-        list($originalWhole, 
+        list($originalWhole,
                 $originalFractional) = $this->splitDecimalIntoWholeAndFractional($decimal);
 
         if ($positionAfterPoint > 0) {
@@ -26,32 +28,32 @@ class Math
 
             if (count($originalFractionalChars) < $positionAfterPoint) {
                 $result = $decimal;
-                for ($i = count($originalFractionalChars) - 1; $i < $positionAfterPoint - 1; $i++) { 
+                for ($i = count($originalFractionalChars) - 1; $i < $positionAfterPoint - 1; ++$i) {
                     $result .= '0';
                 }
             } else {
-                $digitToRound = $originalFractionalChars[$positionAfterPoint-1].'.';
-                for ($i = $positionAfterPoint; $i < count($originalFractionalChars); $i++) { 
+                $digitToRound = $originalFractionalChars[$positionAfterPoint - 1].'.';
+                for ($i = $positionAfterPoint; $i < count($originalFractionalChars); ++$i) {
                     $digitToRound .= $originalFractionalChars[$i];
                 }
 
                 $roundedDigit = ceil($digitToRound);
 
                 $stack1 = new \SplStack();
-                for ($i=0; $i < $positionAfterPoint-1; $i++) { 
+                for ($i = 0; $i < $positionAfterPoint - 1; ++$i) {
                     $stack1->push($originalFractionalChars[$i]);
                 }
                 $stack1->push($roundedDigit);
 
                 $stack2 = new \SplStack();
-                for ($i=0; $i < $positionAfterPoint; $i++) { 
+                for ($i = 0; $i < $positionAfterPoint; ++$i) {
                     $digit = $stack1->pop();
 
                     if (!empty($plusFlag)) {
-                        $digit++;
-                    } 
+                        ++$digit;
+                    }
 
-                    if ($digit == 10) {
+                    if ((string) $digit === '10') {
                         $digit = '0';
                         $plusFlag = true;
                     } else {
@@ -62,22 +64,22 @@ class Math
                 }
 
                 $roundedFractional = '';
-                for ($i=0; $i < $positionAfterPoint; $i++) { 
+                for ($i = 0; $i < $positionAfterPoint; ++$i) {
                     $roundedFractional .= $stack2->pop();
                 }
-            
+
                 $result = $originalWhole.'.'.$roundedFractional;
             }
         } else {
             $originalWholeChars = str_split($originalWhole);
 
-            $digitToRound = $originalWholeChars[count($originalWholeChars)-1].'.'; 
+            $digitToRound = $originalWholeChars[count($originalWholeChars) - 1].'.';
             $digitToRound .= $originalFractional;
 
             $roundedDigit = ceil($digitToRound);
 
             $result = $originalWholeChars;
-            $result[count($originalWholeChars)-1] = $roundedDigit;
+            $result[count($originalWholeChars) - 1] = $roundedDigit;
             $result = implode('', $result);
         }
 
@@ -100,8 +102,8 @@ class Math
                     throw new CheckNumberIsDecimalException($number);
                 }
             }
-        } elseif ((int)0 === preg_match('%\.%', $number)) {
-            if (!ctype_digit($number)) { 
+        } elseif ((int) 0 === preg_match('%\.%', $number)) {
+            if (!ctype_digit($number)) {
                 throw new CheckNumberIsDecimalException($number);
             } else {
                 $isDecimal = false;
@@ -131,7 +133,7 @@ class Math
         $result = $integer;
 
         if ($numberOfDigitsAfterPoint > 0) {
-            $result = number_format($result, $numberOfDigitsAfterPoint, '.', '');
+            $result = number_format((float) $result, $numberOfDigitsAfterPoint, '.', '');
         }
 
         return $result;

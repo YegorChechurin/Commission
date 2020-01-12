@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace YegorChechurin\CommissionTask\Service\DomainLogicSettings;
 
 use YegorChechurin\CommissionTask\Service\DomainLogicSettings\Exception\LogicException\NoSettingsFileException;

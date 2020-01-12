@@ -1,8 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace YegorChechurin\CommissionTask\Controller;
 
-require dirname(__DIR__, 2) . '/vendor/autoload.php';
+require dirname(__DIR__, 2).'/vendor/autoload.php';
 
 use YegorChechurin\CommissionTask\Service\CommissionFeeCalculation\CommissionFeeCalculatorFactory\CommissionFeeCalculatorFactoryInterface;
 use YegorChechurin\CommissionTask\Service\CommissionFeeCalculation\OperationsFileReader;
@@ -17,5 +19,5 @@ $operationsFileReader = $container->get(OperationsFileReader::class);
 $operations = $operationsFileReader->getOperations($argv[1]);
 
 foreach ($operations as $opr) {
-	echo $commissionFeeCalculatorFactory->getCommissionFeeCalculator($opr)->calculateCommissionFee($opr)."\n";
+    echo $commissionFeeCalculatorFactory->getCommissionFeeCalculator($opr)->calculateCommissionFee($opr)."\n";
 }

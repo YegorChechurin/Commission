@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace YegorChechurin\CommissionTask\Service\DomainLogicSettings\CurrencyManagement;
 
 use YegorChechurin\CommissionTask\Service\DomainLogicSettings\AbstractSettingsManager;
@@ -7,24 +9,24 @@ use YegorChechurin\CommissionTask\Service\DomainLogicSettings\CurrencyManagement
 
 class CurrenciesManager extends AbstractSettingsManager
 {
-	public function getCurrencyConversionRate(string $currencyName)
-	{
-		$this->checkCurrencyIsSupported($currencyName);
+    public function getCurrencyConversionRate(string $currencyName)
+    {
+        $this->checkCurrencyIsSupported($currencyName);
 
-		return $this->settings[$currencyName]['conversion_rate'];
-	}
+        return $this->settings[$currencyName]['conversion_rate'];
+    }
 
-	public function getNumberOfDecimalDigitsOfCurrencySmallestItem(string $currencyName)
-	{
-		$this->checkCurrencyIsSupported($currencyName);
-		
-		return $this->settings[$currencyName]['number_of_decimal_digits_of_smallest_item'];
-	}
+    public function getNumberOfDecimalDigitsOfCurrencySmallestItem(string $currencyName)
+    {
+        $this->checkCurrencyIsSupported($currencyName);
 
-	private function checkCurrencyIsSupported(string $currencyName)
-	{
-		if (!array_key_exists($currencyName, $this->settings)) {
-			throw new UnsupportedCurrencyException($currencyName);
-		}
-	}
+        return $this->settings[$currencyName]['number_of_decimal_digits_of_smallest_item'];
+    }
+
+    private function checkCurrencyIsSupported(string $currencyName)
+    {
+        if (!array_key_exists($currencyName, $this->settings)) {
+            throw new UnsupportedCurrencyException($currencyName);
+        }
+    }
 }

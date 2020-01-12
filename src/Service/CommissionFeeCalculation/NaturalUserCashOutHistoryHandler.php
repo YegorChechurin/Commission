@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace YegorChechurin\CommissionTask\Service\CommissionFeeCalculation;
 
 use YegorChechurin\CommissionTask\Service\DateTimeOperations\DateChecker;
@@ -36,7 +38,7 @@ class NaturalUserCashOutHistoryHandler
         if (!$this->dateChecker->checkDatesAreOnSameWeek($operationDate, $this->userHistory[$userId]['date'])) {
             $this->createUserHistoryRecord($userId, $operationDate, $operationAmountEUR);
         } else {
-            $this->userHistory[$userId]['operation_count']++;
+            ++$this->userHistory[$userId]['operation_count'];
             $this->userHistory[$userId]['total_amount_in_euro'] += $operationAmountEUR;
             $this->userHistory[$userId]['date'] = $operationDate;
         }

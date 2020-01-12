@@ -11,6 +11,6 @@ composer phpunit - all the phpunit tests <br/>
 composer test-cs - for php-cs-fixer checks <br/>
 composer test - for both phpunit and php-cs-fixer <br/>
 
-At the moment only phpunit tests pass. If you give me some more time, I will check the code syntax in order to fix the php-cs-fixer checks.
+Both phpunit and cs-fixer tests pass.
 
 It was fun doing your task, hope you like the solution I came up with :)
